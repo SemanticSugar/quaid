@@ -1,0 +1,39 @@
+/********* simple console! ************/
+
+#console{
+    position: fixed !important;
+    position: absolute;
+    top: 0;
+    left: -468px;
+    width: 500px;
+    background: #fff;
+    border: 1px solid #ccc;
+    z-index: 10000;
+    display: none;
+}
+
+#console-head{
+    margin: 0;
+    padding: 10px 5px;
+    background: #ccc;
+    color: #fff;
+}
+
+#console-body{
+    overflow: auto;
+    height: 260px
+}
+
+#console-expand-link{
+    display: block;
+    position: absolute;
+    right: 10px;
+    top: 5px;
+    width: 15px;
+    height: 20px;
+}
+
+#console .console-message{
+    padding: 5px;
+    border-bottom: 1px solid #eee;
+}

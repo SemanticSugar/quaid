@@ -1,0 +1,12 @@
+
+- $.ajax monkey patch with validation support.
+  - figure out how to test the asyncError validation method
+  - test asyncError validation method connect-to-another-field stuff
+
+- build a page on the bogle site for it.
+  - Docs: 
+  - Overview/front page with short explanation, code examples.
+  - learn more page with
+    - overview: talk about philosophy, lace with code examples.
+    - explain and examples for each component 'module'
+    - Actual api docs? How to extract js comments as docs?

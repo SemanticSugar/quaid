@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="./js/jquery.validate.js"></script>
+    <script src="./js/jquery.form.js"></script>
+    <script src="./js/qunit.js"></script>
+    
+    <link rel="stylesheet" href="./css/qunit.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="./css/simple_console.css" type="text/css" media="screen" />
+    
+    <script type="text/javascript" src="../src/core.js"></script>
+    <script type="text/javascript" src="../src/log.js"></script>
+    <script type="text/javascript" src="../src/util.js"></script>
+    <script type="text/javascript" src="../src/simpleconsole.js"></script>
+    <script type="text/javascript" src="../src/validation.js"></script>
+    <script type="text/javascript" src="../src/widget.js"></script>
+    <script type="text/javascript" src="../src/form.js"></script>
+    
+    <script type="text/javascript" src="./core.js"></script>
+    <script type="text/javascript" src="./validation.js"></script>
+    <script type="text/javascript" src="./form.js"></script>
+    <script type="text/javascript" src="./widget.js"></script>
+
+    <script>
+    </script>  
+</head>
+<body>
+    <h1 id="qunit-header">Quaid Tests</h1>
+    <h2 id="qunit-banner"></h2>
+    <h2 id="qunit-userAgent"></h2>
+    <ol id="qunit-tests"></ol>
+    <div id="core-tests"></div>
+    
+    <h2>Validation markup</h2>
+    <div id='validation'>
+        <form>
+            <input type="text" name="first_name" title="first name" value="jim" autocomplete="off"/>
+            <input type="text" name="last_name" title="last name" value="bob" autocomplete="off"/>
+        </form>
+    </div>
+    
+    <h2>Form markup</h2>
+    <div id="form">
+        <form id="form-form" action="data/json.php" method="post">
+            <input type="text" name="text" value="omg" autocomplete="off"/>
+            <input type="text" name="int" autocomplete="off"/>
+            <input type="text" name="decimal" autocomplete="off"/>
+            <textarea name="area"></textarea>
+            <select name="select">
+                <option value="option1">opt1</option>
+                <option value="option2">opt2</option>
+                <option value="option3">opt3</option>
+            </select>
+            <input type="checkbox" name="checkbox1"/>
+            <input type="checkbox" name="checkbox2"/>
+            <input type="radio" name="radio" value="val1"/>
+            <input type="radio" name="radio" value="val2"/>
+            <input type="radio" name="radio" value="val3"/>
+            <input type="radio" name="radio" value="val4"/>
+            <input type="submit"/>
+        </form>
+    </div>
+    
+    <h2>Dynamic junk</h2>
+</body>
+
+</html>
