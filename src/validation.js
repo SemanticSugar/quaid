@@ -27,50 +27,48 @@ THE SOFTWARE.
 //
 
 var Q = $[$.QUAID];
+$.ajaxOriginal = $.ajax;
 
 /**
- *
- * $.ajax - Monkey patch for the jquery ajax function. It handles our json
+ * <p>Monkey patch for the jquery ajax function. It handles our json
  * conventions. It handles 500 errors. It makes you coffee. It entertains your
- * girlfriend so you can get some shit done.
+ * girlfriend so you can get some shit done.</p>
  *
- * This patch is a thin layer that does some error handling and introduces a
- * new option to the options object:
+ * <p>This patch is a thin layer that does some error handling and introduces a
+ * new option to the options object:</p>
  *
- * applicationError()
+ * <pre class="code">applicationError()</pre>
  *
- * So when everything is good, the server will return json in the form:
+ * <p>So when everything is good, the server will return json in the form:</p>
  *
- *   { status: 'success', otherStuff: ... }
+ * <pre class="code">{ status: 'success', otherStuff: ... }</pre>
  *
- * When there is an application error it will return something like:
+ * <p>When there is an application error it will return something like:</p>
  *
- *   {
+ * <pre class="code">{
  *     status: 'fail',
  *     errors: [
- *       {value: 'hi@example.com', message: 'Email address in use', field: 'email_address'},
- *       {code: 64, message: 'Ads step is incomplete'}
+ *         {value: 'hi@example.com', message: 'Email address in use', field: 'email_address'},
+ *         {code: 64, message: 'Ads step is incomplete'}
  *     ]
- *   }
+ * }</pre>
  *
- * In this case your options.applicationError(errortype, errors) callback will
+ * <p>In this case your options.applicationError(errortype, errors) callback will
  * be called. errortype will be 'applicationerror' and errors will be split into
- * general and field type errors:
+ * general and field type errors:</p>
  *
- *   {
+ * <pre class="code">{
  *     general: [
- *       {code: 64, message: 'Ads step is incomplete'}
+ *         {code: 64, message: 'Ads step is incomplete'}
  *     ],
  *     field: [
- *       {value: 'hi@example.com', message: 'Email address in use', field: 'email_address'}
+ *         {value: 'hi@example.com', message: 'Email address in use', field: 'email_address'}
  *     ]
- *   }
+ * }</pre>
  *
- * field errors will be passed automatically through Q.asyncErrors.add
- * and will get shoved into your form if possible.
- * 
+ * <p>Field errors will be passed automatically through {@link Q.asyncErrors.add}
+ * and will get shoved into your form if possible.</p>
  **/
-$.ajaxOriginal = $.ajax;
 $.ajax = function( options ) {
 
     //If json, we put our functions in the options dict for success and error.
@@ -171,50 +169,71 @@ $.ajax = function( options ) {
     return $.ajaxOriginal(options);
 };
 
+/**
+ * Called on 500 errors. You'll probably want to override this for your own applications.
+ */
 Q.handleServerError = function(){
     alert('Oops. An error occurred. Our team has been notified!');
 };
 
 /**
- * Async Error stuff. This code allows us to push validation errors from the
- * server through the jquery validation framework. Here's how it works:
+ * @namespace
+ * 
+ * <p>Allows us to push validation errors from the
+ * server through the jquery validation framework. Here's how it works.</p>
  *
- * You setup some validation rules with Q.getValidationOptions:
+ * <p>You setup some validation rules:</p>
  *
- * var rules = {
+ * <pre class="code">var rules = {
  *     rules: { something: 'required' },
  *     messages: { something: 'omg you need something' }
  * };
- * $('form#my-form').adrollValidate(rules);
+ * $('form#my-form').validate(rules);</pre>
  *
- * $.fn.adrollValidate will append the 'asyncError' rule to your
- * rules.
+ * <p>$.fn.validate will call {@link Q.getValidationOptions} which will add the 'asyncError' validation method to your
+ * rules. You can add these asyncError validation methods manually if you like:</p>
  *
- * You make a post to some action on the server which will return some errors,
- * then you send the errors to Q.asyncErrors. Q.asyncErrors
- * will display the errors just like regular client side errors. 
+ * <pre class="code">var rules = {
+ *     rules: { something: {
+ *         required: true,
+ *         asyncError: false //can be true or false. false will disable it.
+ *     }},
+ *     messages: { something: 'omg you need something' }
+ * };</pre>
+ * 
+ * <p>You make a post to some action on the server which will return some errors,
+ * then Quaid's monkey-patched {@link $.ajax} function adds the errors to Q.asyncErrors. Q.asyncErrors
+ * will display the errors just like regular client side errors.</p>
  *
- * $.post('/myaction', {param: 'wow'}, function(data){
+ * <pre class="code">$.post('/myaction', {param: 'wow'}, function(data){
  *     if(data.status == 'fail')
  *         Q.asyncErrors(data.errors, $('form#my-form'));
- * }, 'json');
+ * }, 'json');</pre>
  *
- * The data from above should look something like:
+ * <p>The data from above request failure should look something like:</p>
  *
- * data = {
+ * <pre class="code">data = {
  *     status: 'fail',
  *     errors: [
  *         {field: 'name', value: '', message: 'Name is too short!'},
  *         {field: 'email', value: 'wow@ok', message: 'Email is not valid!'}
  *     ]
- * }
- *
+ * }</pre>
  **/
-
 Q.asyncErrors = {
     
     errors: {},
     
+    /**
+     * <p>Add a list of errors to this Q.asyncErrors. The form will be revalidated and your
+     * errors will be pushed through the client side validation framework.</p>
+     *
+     * @param errors A list of error dictionaries. Should be in the format:
+     * <pre class="code">[
+     *     {field: 'name', value: '', message: 'Name is too short!'},
+     *     {field: 'email', value: 'wow@ok', message: 'Email is not valid!'}
+     * ]</pre>
+     */
     add: function(errors){
       
         Q.asyncErrors.clear();
@@ -255,10 +274,12 @@ Q.asyncErrors = {
         
     },
 
-    clear: function(errors){
+    /**
+     * <p>Clears all errors.</p>
+     */
+    clear: function(){
         Q.asyncErrors.errors = {};
     }
-
 };
 
 
@@ -330,10 +351,20 @@ if($.validator && $.fn.validate){
         }
     );
     
+    /**
+     * <p>Overall default validation options. You probably want to override this for, say,
+     * your own error label placement.</p>
+     */
     Q.defaultValidationOptions = {
         //insert your own defaults here!
     };
     
+    /**
+     * <p>Overrides {@link Q.defaultValidationOptions} with newopts, normalizes all your rules,
+     * and adds 'asyncError' validation methods to all rules where it is not already specified.</p>
+     *
+     * <p>Called automatically by the new validate() function.</p>
+     */
     Q.getValidationOptions = function(newopts){
         
         function normalizeRule(data) {

@@ -293,9 +293,9 @@ $(document).ready(function(){
     });
     
     
-    module('DataInterpreters');
+    module('DataFormatters');
     
-    var DI = Q.DataInterpreters;
+    var DI = Q.DataFormatters;
     
     test('_parseInterpreter', function(){
         var res = DI._parseInterpreter('sOmething_good');

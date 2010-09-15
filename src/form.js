@@ -28,19 +28,27 @@ THE SOFTWARE.
 
 var Q = $[$.QUAID];
 
-/**
- * Simple textbox class. Right now just provides a function to get the box's selection
- **/
-Q.Textbox = Class.extend('Textbox', {
-    init: function(box, settings){
-        this._super(box, settings, {});
+Q.Textbox = Class.extend('Textbox', /** @lends Q.Textbox# */{
+    
+    /**
+     * @class <p>Simple textbox class. Right now just provides a function to get the box's selection</p>
+     *
+     * @augments Q.Class
+     * @param box the textbox
+     * @param options your config
+     * @constructs
+     **/
+    init: function(box, options){
+        this._super(box, options, {});
         this.box = $(box);
     },
     
+    /** <p>Pass through to jQuery's input.val() method</p> */
     val: function(value){
         return this.box.val(value);
     },
     
+    /** <p>Gets the currently selected text in the box.</p> */
     getSelection: function(){
         
         var textComponent = this.box[0];
@@ -65,20 +73,19 @@ Q.Textbox = Class.extend('Textbox', {
     }
 });
 
-/**
- *  Int box. Only allows integers to be typed into the box.
- *
- *  $('input#my-textbox').IntBox();
- *  
- *  :param options: options
- *
- *  options = {
- *      onFail: function(keyCode){ return false; },
- *      maxDigits: 7
- *  };
- *  
- **/
-Q.IntBox = Q.Textbox.extend('IntBox', {
+Q.IntBox = Q.Textbox.extend('IntBox', /** @lends Q.IntBox# */{
+    /**
+     *  @class <p>Int box. Only allows integers to be typed into the box.</p>
+     *
+     *  <pre class="code">
+     *  $('input#my-textbox').IntBox();
+     *  </pre>
+     *
+     *  @augments Q.Textbox
+     *  @param box the textbox
+     *  @param options your config
+     *  @constructs
+     **/
     init: function(box, options){
         
         var defs = {
@@ -86,7 +93,7 @@ Q.IntBox = Q.Textbox.extend('IntBox', {
             maxDigits: 7
         };
         
-        var settings = $.extend({}, defs, options);
+        var settings = $.extend({}, this.defaults, options);
         
         this._super(box, settings);
         
@@ -107,19 +114,36 @@ Q.IntBox = Q.Textbox.extend('IntBox', {
         });
         
         return this;
+    },
+    
+    /**
+     * <p>Default options.</p>
+     *
+     * <pre class="code">
+     * onFail: function(keyCode){ return false; },
+     * maxDigits: 7
+     * </pre>
+     */
+    defaults: {
+        onFail: function(key){ return false; },
+        maxDigits: 7
     }
 });
 
-/**
- *  Decimal box. Only allows real numbers to be typed into the box. Only one decimal
- *  and numbers can be typed.
- *
- *  $('input#my-textbox').DecimalBox();
- *  
- *  :param options: options
- *  
- **/
-Q.DecimalBox = Q.IntBox.extend('DecimalBox', {
+Q.DecimalBox = Q.IntBox.extend('DecimalBox', /** @lends Q.DecimalBox# */{
+    /**
+     *  @class <p>Decimal box. Only allows real numbers to be typed into the box. Only one decimal
+     *  and numbers can be type.</p>
+     *
+     *  <pre class="code">
+     *  $('input#my-textbox').DecimalBox();
+     *  </pre>
+     *
+     *  @augments Q.IntBox
+     *  @param box the textbox
+     *  @param options your config
+     *  @constructs
+     **/
     init: function(box, options){
         var defs = {};
         var settings = $.extend({}, defs, options);
@@ -140,33 +164,58 @@ Q.DecimalBox = Q.IntBox.extend('DecimalBox', {
     }
 });
 
-/**
- * Form class.
- *
- * - Handles validation connect via validate plugin.
- * - Will load default data.
- * - Can force types on elements with the dataType option
- *
- * - Provides comvenience methods like load() (from a dict), reset(), getElement etc.
- * 
- **/
-Q.Form = Class.extend('Form', {
-    init: function(container, settings){
-        var self = this;
-        var defs = {
-            //enforces data types for form elements. use 'input_name':'type'
-            // supported types: int, decimal, + whatever you put in Q.Form.dataTypes
-            dataTypes: {        
-                //i.e
-                //date_input: 'date'
-            },
+Q.Form = Class.extend('Form', /** @lends Q.Form */{
+        //static members
+        /**
+         * <p>Default options.</p>
+         * <pre class="code">
+         * // enforces data types for form elements. use 'input_name':'type'
+         * // supported types: int, decimal, + whatever you put in Q.Form.dataTypes
+         * dataTypes: {
+         *     //i.e
+         *     //date_input: 'date'
+         * },
+         * validationOptions: {},
+         * defaultData: {},
+         * resetInitially: false,
+         * onLoad: function(data){}
+         * </pre>
+         */
+        defaults: {
+            dataTypes: {},
             validationOptions: {},
             defaultData: {},
             resetInitially: false,
             
             onLoad: function(data){}
-        };
-        self._super(container, settings, defs);
+        },
+        
+        /**
+         * Data types that can be specified for an element in the Q.Form class. These will setup the
+         * element for the type specified. i.e. an int element will only allow the user to type integers.
+         * A hypothetical date element would hookup a date picker, etc. Feel free to add your own.
+         **/
+        dataTypes: {
+            'int': function(elem){
+                elem.IntBox();
+            },
+            'decimal': function(elem){
+                elem.DecimalBox();
+            }
+        }
+    }, /** @lends Q.Form# */{
+    /**
+     * @class <p>Handles validation via validate plugin. Will load default data. Can force types on
+     * elements with the dataType option. Also provides comvenience methods like
+     * load() (from a dict), reset(), getElement etc.
+     * </p>
+     *
+     * @augments Q.Class
+     * @constructs
+     **/
+    init: function(container, options){
+        var self = this;
+        self._super(container, $.extend(true, {}, self._class.defaults, options));
         settings = self.settings;
         
         if(container.is('form'))
@@ -193,13 +242,20 @@ Q.Form = Class.extend('Form', {
         }
     },
     
+    /**
+     * <p>Apply the data types filters. i.e. make some text boxen IntBoxes, or DecimalBoxes, etc.</p>
+     * @private
+     */
     _setElementDataFilter: function(elem, type){
-        if($.isFunction(Q.Form.dataTypes[type])){
-            Q.Form.dataTypes[type].call(this, elem);
+        if($.isFunction(this._class.dataTypes[type])){
+            this._class.dataTypes[type].call(this, elem);
         }
     },
     
-    //use val()
+    /**
+     * <p>Set data in an element. Dont use this. use val()</p>
+     * @private
+     */
     _setData: function(elem, data){
         if(elem.attr('type') == 'radio'){
             elem.each(function(){
@@ -214,10 +270,23 @@ Q.Form = Class.extend('Form', {
             elem.val(data);
     },
     
+    /**
+     * <p>Will return the HTML element with the name specified if possible.</p>
+     * @returns an HTML element corresponding to the passed in name
+     */
     getElement: function(name){
         return this.form.find('input[name="'+name+'"], textarea[name="'+name+'"], select[name="'+name+'"]');
     },
     
+    /**
+     * <p>Works like jQuery val() function. If the val parameter is not specified, val()
+     * will return the value of the element corresponding to the passed in name. If val param
+     * is specified, it will set the HTML element's value to val.</p>
+     *
+     * @param name the name of the HTML element to value get/set
+     * @param val (optional) the value to set. Will set if specified, will get if not.
+     * @returns undefined if val specified, the value of the HTML element if not.
+     */
     val: function(name, val){
         var elem = this.getElement(name);
         
@@ -236,12 +305,17 @@ Q.Form = Class.extend('Form', {
         return elem.val();
     },
     
+    /**
+     * <p>Set focus on the first text element in the form.</p>
+     */
     focusFirst: function(){
         this.form.find('input[type="text"]:first, textarea:first').focus();
     },
     
-    // Will reset the form based on the settings.defaultData dict.
-    // If an element's name is not in the dict, the value will be cleared/unchecked
+    /**
+     * <p>Will reset the form based on the settings.defaultData dict. If an element's name
+     * is not in the dict, the value will be cleared/unchecked</p>
+     */
     reset: function(){
         var elems = this.form.find('input, textarea, select');
         var defs = this.settings.defaultData;
@@ -259,13 +333,14 @@ Q.Form = Class.extend('Form', {
     },
     
     /**
-     * Loads data into the form.
-     * data is in the form
-     * {
+     * <p>Loads data into the form. data is in the format:</p>
+     * <pre class="code">{
      *   'element_name': 'value',
      *   'checkbox': true,
      *   ....
-     * }
+     * }</pre>
+     *
+     * @param data the data object to load into the form
      **/
     load: function(data){
         if($.isFunction(this.settings.onLoad)) this.settings.onLoad.call(this, data);
@@ -275,53 +350,64 @@ Q.Form = Class.extend('Form', {
         }
     },
     
+    /**
+     * <p>Will hide the element which Q.Form was called on. </p>
+     */
     hide: function(){
         this.container.hide();
     },
     
+    /**
+     * <p>Will show the element which Q.Form was called on. </p>
+     */
     show: function(){
         this.container.show();
         this.focusFirst();
     },
     
+    /**
+     * <p>Will hide the submit the HTML form.</p>
+     */
     submit: function(){
         this.form.submit();
     }
 });
 
-/**
- * Data types that can be specified for an element in the Q.Form class. These will setup the
- * element for the type specified. i.e. an int element will only allow the user to type integers.
- * A hypothetical date element would hookup a date picker, etc. Feel free to add your own.
- **/
-Q.Form.dataTypes = {
-    'int': function(elem){
-        elem.IntBox();
-    },
-    'decimal': function(elem){
-        elem.DecimalBox();
-    }
-};
-
-/**
- * Q.AsyncForm Extends Form to allow for async form submission.
- *
- * Provides validation via the bassistance validate plugin.
- * Provides async form submission via malsup's form plugin.
- * Provides a loading image inside the form via this library's Loader object.
- **/
-Q.AsyncForm =  Q.Form.extend('AsyncForm', {
-    init: function(container, settings){
-        var self = this;
-        var defs = {
+Q.AsyncForm =  Q.Form.extend('AsyncForm', /** @lends Q.AsyncForm */{
+        /**
+         * <p>Default options. Extends {@link Q.Form} defaults.</p>
+         * <pre class="code">
+         * loaderLocation: {position: 'absolute', bottom: 5, left: 5}, //passed into Q.Loader
+         * ajaxOptions: {dataType: 'json'}, //passed into $.ajax()
+         * validationOptions: {}, //passed into the validation plugin
+         * onSuccess: function(data){},
+         * onFail: function(err_type, errors){}
+         * </pre>
+         */
+        defaults: {
             loaderLocation: {position: 'absolute', bottom: 5, left: 5},
             ajaxOptions: {dataType: 'json'},
             validationOptions: {},
             onSuccess: function(data){},
             onFail: function(data){}
-        };
+        }
+    },/** @lends Q.AsyncForm# */{
+    /**
+     * @class <p>
+     * Extends Form to allow for async form submission.
+     * Provides validation via the bassistance validate plugin.
+     * Provides async form submission via malsup's form plugin.
+     * Provides a loading image inside the form via this library's Q.Loader object.
+     * </p>
+     *
+     * @augments Q.Form
+     * @constructs
+     **/
+    init: function(container, settings){
+        var self = this;
+        settings = $.extend(true, {}, self._class.defaults, settings);
         
-        settings = $.extend({}, defs, settings);
+        //hook the async form submission to the validation plugin
         settings.validationOptions.submitHandler = function(validForm){
             self.loader.startLoading();
             var opts = $.extend(settings.ajaxOptions, {

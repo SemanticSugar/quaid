@@ -22,10 +22,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-// no conflict.
 (function($){
 //
-
+/**
+ * Log data to the console. Will use console.log if available. 
+ * @function
+ * @param args {string} takes any number of strings. Will separate each string with a space.
+ */
 $.log = function(){
     if( $.log.enabled ){
         if( !$.log.logFn.apply(null, arguments) )
@@ -51,10 +54,46 @@ $.log.LEVEL_ORDER = [$.log.DEBUG, $.log.INFO, $.log.WARNING, $.log.ERROR, $.log.
 
 //here is a log prefix to console function name map.
 $.log.LEVEL_FUNCTIONS = {};
+
+/**
+ * Log debug data to the console. Effictively a special $.log with the lowest log level.
+ * 
+ * @function
+ * @name $.debug
+ * @param args {string} takes any number of strings. Will separate each string with a space.
+ */
 $.log.LEVEL_FUNCTIONS[$.log.DEBUG] = 'debug';
+
+/**
+ * Log info data to the console. Will use console.info if available, defaults to console.log
+ * if no special info function exists.
+ * 
+ * @function
+ * @name $.info
+ * @param args {string} takes any number of strings. Will separate each string with a space.
+ */
 $.log.LEVEL_FUNCTIONS[$.log.INFO] = 'info';
+
+/**
+ * Log warning data to the console. Will use console.info if available, defaults to console.log
+ * if no special info function exists.
+ * 
+ * @function
+ * @name $.warn
+ * @param args {string} takes any number of strings. Will separate each string with a space.
+ */
 $.log.LEVEL_FUNCTIONS[$.log.WARNING] = 'warn';
+
+/**
+ * Log errors to the console. Will use console.info if available, defaults to console.log
+ * if no special info function exists.
+ * 
+ * @function
+ * @name $.error
+ * @param args {string} takes any number of strings. Will separate each string with a space.
+ */
 $.log.LEVEL_FUNCTIONS[$.log.ERROR] = 'error';
+
 $.log.LEVEL_FUNCTIONS[$.log.LOG] = 'log';
 
 $.log.logFn = function(){

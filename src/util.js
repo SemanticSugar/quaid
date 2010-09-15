@@ -28,27 +28,39 @@ THE SOFTWARE.
 
 var Q = $[$.QUAID];
 
-$.extend($, {
+$.extend($, /** @lends $ */{
     
+    /** <p>Is thing a string?</p> */
     isString: function(thing){
         return typeof thing == "string" || thing instanceof String;
     },
     
+    /** <p>Is thing a number?</p> */
     isNumber: function(thing){
         return typeof thing == "number";
     },
     
-    /**
-     * Why does this check for only vanilla objects? Because I often need to.
-     **/
+    /** <p>Is thing a vanilla object?</p> */
     isObject: function(thing){
         return !$.isString(thing) && !$.isArray(thing) && ! (thing instanceof Date) && thing instanceof Object;
     },
     
+    /**
+     * <p>Will round a number to a certain number of decimal places.</p>
+     * @param num Your number to round
+     * @param rlength The number of decimals to round to.
+     */
     round: function(num, rlength){
         return Math.round(num*Math.pow(10,rlength))/Math.pow(10,rlength);
     },
     
+    /**
+     * <p>Will zero pad a number to keep a certain number of minimum digits.
+     * i.e. zero padding 234 to 5 digits would result in 00234</p>
+     * @param num Your number to pad
+     * @param rlength The number of min digits
+     * @returns a string with the zero padded number
+     */
     zeroPad: function(num, digits){
         
         num = ''+num;
@@ -67,17 +79,17 @@ $.extend($, {
      ***/
     
     /**
-    * returns the proper string for the number given.
-    * i.e. pluralize(1, '{0} people', 'one person', 'no people :(')
-    * would return 'one person'
-    * 
-    * {0} is replaced with the number, always, even in the one case.
-    *
-    * :param num: number of things to be described
-    * :param ifmany: verbage for more than 1 item
-    * :param ifone: verbage for 1 item
-    * :param ifzero: optional; if not will use ifmany.
-    **/
+     * <p>returns the proper string for the number given.
+     * i.e. pluralize(1, '{0} people', 'one person', 'no people :(')
+     * would return 'one person'</p>
+     * 
+     * <p>{0} is replaced with the number, always, even in the one case.</p>
+     *
+     * @param num number of things to be described
+     * @param ifmany verbage for more than 1 item
+     * @param ifone verbage for 1 item
+     * @param ifzero (optional) if not will use ifmany.
+     **/
     pluralize: function(num, ifmany, ifone, ifzero){
         var str = ifmany;
        
@@ -89,6 +101,13 @@ $.extend($, {
         return str.replace('{0}', num);
     },
     
+    /**
+     * <p>Joins a list of string with commas and an 'and' between the last 2 elements.
+     * i.e. $.andJoin([2, 3, 5]) => '2, 3 and 5'</p>
+     *
+     * @param list a list of things to be joined
+     * @returns an and joined string
+     **/
     andJoin: function(strings){
         if(strings.length == 0)
             return '';
@@ -98,9 +117,16 @@ $.extend($, {
         return strings.slice(0, strings.length-1).join(', ') + ' and ' + strings[strings.length - 1];
     },
     
-    //sort of string interpolation
-    //replace('/blah/{0}/apsd/{1}', ['wow', 'omg']) returns '/blah/wow/apsd/omg'
-    //replace('/blah/{bar}/apsd/{foo}', {foo: 'wow', bar: 'omg'}) returns '/blah/omg/apsd/wow'
+    /**
+     * <p>Sort of string interpolation.</p>
+     * <pre class="code">
+     * replace('/blah/{0}/apsd/{1}', ['wow', 'omg']); // returns '/blah/wow/apsd/omg'
+     * replace('/blah/{bar}/apsd/{foo}', {foo: 'wow', bar: 'omg'}); // returns '/blah/omg/apsd/wow'
+     * </pre>
+     * @param str the string to replace
+     * @param vars the vars to put into the string in either list or dict form
+     * @returns a str with the variables contained in vars replaced
+     **/
     replace: function(str, vars){
         
         //turns out the js replace fn only replaces the first str. I am not using regexs. Obvi.
@@ -122,8 +148,13 @@ $.extend($, {
     },
     
     /**
-    * Will commify the number. 10000 becomes 10,000.
-    **/
+     * <p>Will commify the number. 10000 becomes 10,000.</p>
+     * 
+     * @param num the number
+     * @param roundDigits (optional) will make commifyNumber round the integer. i.e.
+     *   12345 with roundDigits == 2 would net 12,300
+     * @returns a commified number
+     **/
     commifyNumber: function(num, roundDigits){
        
         //will round the int if possible
@@ -163,9 +194,12 @@ $.extend($, {
     },
     
     /**
-     * Taken from www.eyecon.ro date picker under MIT. Thanks Stefan Petre.
-     *
-     * Modified by bogle.
+     * <p>Will parse a string date into a Date object.</p>
+     * <p>From www.eyecon.ro date picker under MIT. Thanks Stefan Petre.</p>
+     * 
+     * @param date the string date
+     * @param format
+     * @returns a Date object
      **/
     parseDate: function(date, format){
         if (!date) return null;
@@ -219,7 +253,12 @@ $.extend($, {
     },
     
     /**
-     * Taken from www.eyecon.ro date picker under MIT. Thanks Stefan Petre.
+     * <p>Will format a Date object into a string.</p>
+     * <p>From www.eyecon.ro date picker under MIT. Thanks Stefan Petre.</p>
+     * 
+     * @param date the Date object
+     * @param format
+     * @returns a string date
      **/
     formatDate: function(date, format) {
         var m = date.getMonth();
@@ -318,8 +357,12 @@ $.extend($, {
      ***/
     
     /**
-     * Takes a url, with or without params in string form, and a params dict.
-     * will merge the two params together and return a new url string.
+     * <p>Takes a url, with or without params in string form, and a params dict.
+     * will merge the two params together and return a new url string.</p>
+     * 
+     * @param wholeUrl the entire url (or just the query string)
+     * @param params an object with the stuff you want to override
+     * @returns a new URL
      **/
     extendUrl: function(wholeUrl, params){
         var paramStart = wholeUrl.indexOf('?');
@@ -333,10 +376,22 @@ $.extend($, {
         return url + '?' + $.serializeUrlParams($.extend($.parseUrlParams(oldParams), params));
     },
     
+    /**
+     * <p>Converts an object to a url query string. Synonym for jQuery's builtin $.param().</p>
+     * 
+     * @param dataDict an object with your query string options.
+     * @returns a query string
+     **/
     serializeUrlParams: function(dataDict){
         return $.param(dataDict);
     },
     
+    /**
+     * <p>Parses out the params from a query string. Deserialization.</p>
+     * 
+     * @param q the query string (or whole url) from which you wish to extract params.
+     * @returns a object containing the url's params
+     **/
     parseUrlParams: function(q){
         if(!q) return {};
         var paramStart = q.indexOf('?');
@@ -355,37 +410,78 @@ $.extend($, {
         return dataDict;
     },
     
+    /**
+     * <p>Redirect to some other url. Nothing fancy.</p>
+     **/
     redirect: function(url){
         window.location.replace(url);
     },
     
+    /**
+     * <p>Reload the current page.</p>
+     **/
     reload: function(){
         window.location.reload();
     }
 });
 
-$.extend(Q, {
+$.extend(Q, /** @lends Q */{
+    /** <p>Long form day string list starting from 'Sunday' and ending with 'Sunday'</p> */
     days: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+    
+    /** <p>Short form day string list starting from 'Sun' and ending with 'Sun'</p> */
     daysShort: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    
+    /** <p>First letter of day starting with 'S' for sunday and ending with sunday's 'S'</p> */
     daysMin: ["S", "M", "T", "W", "T", "F", "S", "S"],
+    
+    /** <p>Long form month string list starting with 'January'</p> */
     months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+    
+    /** <p>Short form month string list starting with 'Jan'</p> */
     monthsShort: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 });
 
 /**
- * control char keycodes. Useful, I promise!
- **/
+ * <p>A list of the integer keycodes for non-printable control characters.</p>
+ */
 Q.controlChars = [
     8, 16, 17, 18, 19, 20, 27, 33, 34, 35, 36, 37, 38, 39, 40, 46
 ];
 
-//These are called (when specified) on data that comes back from the server.
-Q.DataInterpreters = {
+/**
+ * @namespace
+ * <p>Functions for formatting data into something a human might like to look at.</p>
+ * <p>These are useful to invoke on data that comes back from the server.</p>
+ */
+Q.DataFormatters = {
     
+    /** <p>The parse format for the date() and datetime() formatter.</p> */
 	dateParseFormat: 'm.d.Y H:M',
+    /** <p>The output format for the datetime() formatter.</p> */
     datetimeFormat: 'b e, Y H:M',
+    /** <p>The output format for the date() formatter.</p> */
     dateFormat: 'b e, Y',
     
+    /**
+     * <p>Will parse a string like 'decimal(3)' into a dict like {fn:'decimal', num:3}.
+     * This is used by the get() function. This format is useful for plugins that need to
+     * use the data formatters as an option. i.e. lets pretend you are writing a table
+     * plugin. The plugin user could specify formatters for each column like so:</p>
+     *
+     * <pre class="code">
+     * var tableOptions = {
+     *     columnFormats: {
+     *         num_column: 'number',
+     *         other_column: 'percent(4)',
+     *         decimal_column: 'decimal(2)',
+     *     }
+     * };
+     * </pre>
+     *
+     * @param interp a string like 'decimal(2)'
+     * @returns an object like {fn:'decimal', num:3}
+     */
     _parseInterpreter: function(interp){
         var re = /([A-Za-z_]+)(\(([0-9]+)\))?/;
         var res = {};
@@ -395,8 +491,24 @@ Q.DataInterpreters = {
         return res;
     },
     
+    /**
+     * <p>Takes a string and a raw value. Will call _parseInterpreter() on the string and call
+     * the resulting formatter with the passed in raw value as a parameter. i.e.</p>
+     *
+     * <pre class="code">
+     * var DF = Q.DataFormatters;
+     * DF.get('decimal(2)', 1.234545); //will call DF.decimal(1.234545, 2); resulting in '1.23'
+     * DF.get('number', 12345); //will call DF.number(12345); resulting in '12,345'
+     * </pre>
+     *
+     * @param fn a string containing a name of one of the formatters i.e. 'number'
+     * @param val the raw value to format
+     *
+     * @returns the result of the formatter call if the formatter can be found.
+     * The raw value if the formatter cannot be found.
+     */
     get: function(fn, val){
-        var DI = Q.DataInterpreters;
+        var DI = Q.DataFormatters;
         var res = DI._parseInterpreter(fn);
         
         if(res.fn in DI){
@@ -408,45 +520,91 @@ Q.DataInterpreters = {
         return val;
     },
     
+    /**
+     * <p>Commifies a number.</p>
+     * @param data the raw value
+     * @returns a string of a commified number
+     */
 	number: function(data){
         if($.isString(data)) return data;
 		return !data ? '0' : $.commifyNumber(parseInt(data));
 	},
     
+    /**
+     * <p>Commifies and rounds a decimal number.</p>
+     * @param data the raw value
+     * @param decimals the number of decmals to round to
+     * @returns a string of a commified number with rounded decimals. i.e. 11234.23456 -> '11,234.23'
+     */
     decimal: function(data, decimals){
         if($.isString(data)) return data;
 		return !data ? '0' : $.commifyNumber($.round(data, decimals == undefined ? 4 : decimals) + '');
 	},
     
-	percent: function(data, decimals){return Q.DataInterpreters.decimal(data, decimals) + '%';},
+    /**
+     * <p>Commifies and rounds a decimal number. Adds a percent sign.</p>
+     * @param data the raw value
+     * @param decimals the number of decmals to round to
+     * @returns a string of a commified number with rounded decimals. i.e. 2.23456 -> '2.23%'
+     */
+	percent: function(data, decimals){return Q.DataFormatters.decimal(data, decimals) + '%';},
 	
+    /**
+     * <p>Commifies and rounds a decimal number, rounds to 2 places, prepends a $.</p>
+     * @param data the raw value
+     * @returns a string of a commified number with rounded decimals. i.e. 1232.23456 -> '$1,232.23'
+     */
 	dollar: function(data){
         if($.isString(data)) return data;
-		return !data ? '$0.00' : '$' + Q.DataInterpreters.decimal(data, 2);
+		return !data ? '$0.00' : '$' + Q.DataFormatters.decimal(data, 2);
 	},
 	
+    /**
+     * <p>Parses a date and converts it to another date format. Maybe your server returs dates in
+     * '3-23-10' and you want it to show as 'Mar 23, 2010'. Will parse the input string with
+     * Q.DataFormats.dateParseFormat and output in Q.DataFormats.dateFormat.</p>
+     * @param data A date string or Date object.
+     * @returns a string date
+     */
 	date: function(data){
 		if(!data)
 			return 'N/A';
         
-		var date = $.parseDate(data, Q.DataInterpreters.dateParseFormat);
+		var date = $.parseDate(data, Q.DataFormatters.dateParseFormat);
 		
-		return $.formatDate(date, Q.DataInterpreters.dateFormat);
+		return $.formatDate(date, Q.DataFormatters.dateFormat);
 	},
     
+    /**
+     * <p>Parses a date and converts it to another date format. Maybe your server returs dates in
+     * '3-23-10 19:45' and you want it to show as 'Mar 23, 2010 19:45'. Will parse the input string with
+     * Q.DataFormats.dateParseFormat and output in Q.DataFormats.datetimeFormat.</p>
+     * @param data A date time string or Date object.
+     * @returns a string date
+     */
     datetime: function(data){
 		if(!data)
 			return 'N/A';
         
-		var date = $.parseDate(data, Q.DataInterpreters.dateParseFormat);
+		var date = $.parseDate(data, Q.DataFormatters.dateParseFormat);
 		
-		return $.formatDate(date, Q.DataInterpreters.datetimeFormat);
+		return $.formatDate(date, Q.DataFormatters.datetimeFormat);
 	},
 	
+    /**
+     * <p>Takes a boolean returns a 'Yes' or a 'No'.</p>
+     * @param data a bool
+     * @returns a string 
+     */
 	bool: function(data){
 		return data ? 'Yes' : 'No';
 	},
     
+    /**
+     * <p>Takes a boolean returns a checkbox html string.</p>
+     * @param data a bool
+     * @returns a string 
+     */
     checkbox: function(data){
         return '<input class="checkbox" type="checkbox" '+ (data ? 'checked="checked"' : '') +'/>';
     }
