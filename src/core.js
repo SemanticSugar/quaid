@@ -56,7 +56,7 @@ if(!$[$.CLASS_NAMESPACE]) $[$.CLASS_NAMESPACE] = {};
     // The base Class implementation
     // add Class to window (this is window)
     this.Class = function(){
-	};
+    };
     /**
      * <p>The base class constructor. Provides setting extension. Puts the settings in
      * this.settings. Puts the container element in this.container. This constructor takes
@@ -73,10 +73,10 @@ if(!$[$.CLASS_NAMESPACE]) $[$.CLASS_NAMESPACE] = {};
      * @param defaults Your subclass' defaults
      * @name Q.Class
      */
-	this.Class.prototype.init = function(container, settings, defaults){
-		this.container = container;
-		this.settings = $.extend({}, defaults, settings);
-	};
+    this.Class.prototype.init = function(container, settings, defaults){
+        this.container = container;
+        this.settings = $.extend({}, defaults, settings);
+    };
  
     /**
      * <p>Create a new class that inherits from Class.</p>

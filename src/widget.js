@@ -128,10 +128,10 @@ Q.Loader = Class.extend('Loader',/** @lends Q.Loader */{
                 var h = self.container.height();
                 var w = self.container.width();
                 self.setLocation({
-					position: 'absolute',
-					top: h/2 - objImagePreloader.height/2,
+                    position: 'absolute',
+                    top: h/2 - objImagePreloader.height/2,
                     left: w/2 - objImagePreloader.width/2
-				});
+                });
                 
                 objImagePreloader.onload=function(){};
             };

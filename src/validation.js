@@ -109,16 +109,16 @@ $.ajax = function( options ) {
         //responses and call the error callback.
         var originalSuccess = options.success || function(){};
         function successHandler(data, status){
-			
-			if(data && !data.status && !data.errors){
-				$.log('Hey, you need a "success" or "errors" param on the response data!');
-			}
+            
+            if(data && !data.status && !data.errors){
+                $.log('Hey, you need a "success" or "errors" param on the response data!');
+            }
             
             // dump the data into the query analyzer.
             if(data.debug && Q.DEBUG){
                 Q.DEBUG.addRequest(data.debug);
             }
-			
+            
             //just pass through for success....
             if( data && data.status == 'success' ){
                 originalSuccess.call(this, data, status);
@@ -246,20 +246,20 @@ Q.asyncErrors = {
             //rule will read.
             for(var i = 0; i < errors.length; i++){
                 var field = $('[name="'+ errors[i].field +'"]:visible');
-				if(field.length){
-					//Infer the form from the field. I hope like hell I am not
-					//dumb enough to have fields from multiple forms coming back in
-					//in this errors dict. 
-					if(!form || form.length == 0)
-						form = field.parents('form');
-					
-					//we save the old value so the rule knows what value caused the error.
-					//if the value changes, then the field will be valid.
-					Q.asyncErrors.errors[errors[i].field] = {
-						message: errors[i].message,
-						val: field.val()
-					};
-				}
+                if(field.length){
+                    //Infer the form from the field. I hope like hell I am not
+                    //dumb enough to have fields from multiple forms coming back in
+                    //in this errors dict. 
+                    if(!form || form.length == 0)
+                        form = field.parents('form');
+                    
+                    //we save the old value so the rule knows what value caused the error.
+                    //if the value changes, then the field will be valid.
+                    Q.asyncErrors.errors[errors[i].field] = {
+                        message: errors[i].message,
+                        val: field.val()
+                    };
+                }
             }
             
             //force form validation so the framework will read our new errors.

@@ -305,9 +305,9 @@ $.extend($, /** @lends $ */{
                     break;
                 case 'j': //zero padded day of the year
                     var now = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0);
-					var then = new Date(date.getFullYear(), 0, 0, 0, 0, 0);
-					var time = now - then;
-					var dy = Math.floor(time / (24*60*60*1000));
+                    var then = new Date(date.getFullYear(), 0, 0, 0, 0, 0);
+                    var time = now - then;
+                    var dy = Math.floor(time / (24*60*60*1000));
                     part = $.zeroPad(dy, 3);
                     break;
                 case 'k': // non zero padded 24-hour hour
@@ -457,7 +457,7 @@ Q.controlChars = [
 Q.DataFormatters = {
     
     /** <p>The parse format for the date() and datetime() formatter.</p> */
-	dateParseFormat: 'm.d.Y H:M',
+    dateParseFormat: 'm.d.Y H:M',
     /** <p>The output format for the datetime() formatter.</p> */
     datetimeFormat: 'b e, Y H:M',
     /** <p>The output format for the date() formatter.</p> */
@@ -525,10 +525,10 @@ Q.DataFormatters = {
      * @param data the raw value
      * @returns a string of a commified number
      */
-	number: function(data){
+    number: function(data){
         if($.isString(data)) return data;
-		return !data ? '0' : $.commifyNumber(parseInt(data));
-	},
+        return !data ? '0' : $.commifyNumber(parseInt(data));
+    },
     
     /**
      * <p>Commifies and rounds a decimal number.</p>
@@ -538,8 +538,8 @@ Q.DataFormatters = {
      */
     decimal: function(data, decimals){
         if($.isString(data)) return data;
-		return !data ? '0' : $.commifyNumber($.round(data, decimals == undefined ? 4 : decimals) + '');
-	},
+        return !data ? '0' : $.commifyNumber($.round(data, decimals == undefined ? 4 : decimals) + '');
+    },
     
     /**
      * <p>Commifies and rounds a decimal number. Adds a percent sign.</p>
@@ -547,18 +547,18 @@ Q.DataFormatters = {
      * @param decimals the number of decmals to round to
      * @returns a string of a commified number with rounded decimals. i.e. 2.23456 -> '2.23%'
      */
-	percent: function(data, decimals){return Q.DataFormatters.decimal(data, decimals) + '%';},
-	
+    percent: function(data, decimals){return Q.DataFormatters.decimal(data, decimals) + '%';},
+    
     /**
      * <p>Commifies and rounds a decimal number, rounds to 2 places, prepends a $.</p>
      * @param data the raw value
      * @returns a string of a commified number with rounded decimals. i.e. 1232.23456 -> '$1,232.23'
      */
-	dollar: function(data){
+    dollar: function(data){
         if($.isString(data)) return data;
-		return !data ? '$0.00' : '$' + Q.DataFormatters.decimal(data, 2);
-	},
-	
+        return !data ? '$0.00' : '$' + Q.DataFormatters.decimal(data, 2);
+    },
+    
     /**
      * <p>Parses a date and converts it to another date format. Maybe your server returs dates in
      * '3-23-10' and you want it to show as 'Mar 23, 2010'. Will parse the input string with
@@ -566,14 +566,14 @@ Q.DataFormatters = {
      * @param data A date string or Date object.
      * @returns a string date
      */
-	date: function(data){
-		if(!data)
-			return 'N/A';
+    date: function(data){
+        if(!data)
+            return 'N/A';
         
-		var date = $.parseDate(data, Q.DataFormatters.dateParseFormat);
-		
-		return $.formatDate(date, Q.DataFormatters.dateFormat);
-	},
+        var date = $.parseDate(data, Q.DataFormatters.dateParseFormat);
+        
+        return $.formatDate(date, Q.DataFormatters.dateFormat);
+    },
     
     /**
      * <p>Parses a date and converts it to another date format. Maybe your server returs dates in
@@ -583,22 +583,22 @@ Q.DataFormatters = {
      * @returns a string date
      */
     datetime: function(data){
-		if(!data)
-			return 'N/A';
+        if(!data)
+            return 'N/A';
         
-		var date = $.parseDate(data, Q.DataFormatters.dateParseFormat);
-		
-		return $.formatDate(date, Q.DataFormatters.datetimeFormat);
-	},
-	
+        var date = $.parseDate(data, Q.DataFormatters.dateParseFormat);
+        
+        return $.formatDate(date, Q.DataFormatters.datetimeFormat);
+    },
+    
     /**
      * <p>Takes a boolean returns a 'Yes' or a 'No'.</p>
      * @param data a bool
      * @returns a string 
      */
-	bool: function(data){
-		return data ? 'Yes' : 'No';
-	},
+    bool: function(data){
+        return data ? 'Yes' : 'No';
+    },
     
     /**
      * <p>Takes a boolean returns a checkbox html string.</p>
