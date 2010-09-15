@@ -113,7 +113,8 @@ if(!$[$.CLASS_NAMESPACE]) $[$.CLASS_NAMESPACE] = {};
      *
      * @function 
      * @name Q.Class.extend
-     * @param newClassName (optional) The name of your subclass. 
+     * @param newClassName (optional) The name of your subclass.
+     * @param staticProperties (optional) static properties of your new class. Accessable via Q.YourClass.$param
      * @param properties The protoype object for your new class
      * @returns Your shiny new class!
      */
@@ -121,6 +122,9 @@ if(!$[$.CLASS_NAMESPACE]) $[$.CLASS_NAMESPACE] = {};
         
         function isStr(s){return typeof s == "string" || s instanceof String;}
         
+        // bogle modifications:
+        //  * allow for auto creation of a node method.
+        //  * allow ability to specify static members
         var newClassName, staticMembers, prop;
         
         if(arguments.length == 1 && arguments[0] instanceof Object)
@@ -134,13 +138,7 @@ if(!$[$.CLASS_NAMESPACE]) $[$.CLASS_NAMESPACE] = {};
         else
             throw new Error('extend() not called correctly!');
         
-        // bogle modification: allow for auto creation of a node method.
-        //so we allow calling extend without a newClassName. If it isnt there, shift.
-        //if(newClassName instanceof Object){
-        //    prop = newClassName;
-        //    newClassName = null;
-        //}
-        /*else*/ if(newClassName){
+        if(newClassName){
             
             if($.fn[newClassName]){
                 throw Error("You cannot define '"+newClassName+"' more than once!");
