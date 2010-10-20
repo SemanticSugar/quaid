@@ -412,11 +412,11 @@ Q.AsyncForm =  Q.Form.extend('AsyncForm', /** @lends Q.AsyncForm */{
             self.loader.startLoading();
             var opts = $.extend(settings.ajaxOptions, {
                 success: function(data){
-                    if($.isFunction(settings.onSuccess)) settings.onSuccess.call(self, data);
+                    self.onSuccess.apply(self, arguments);
                     self.loader.stopLoading();
                 },
                 applicationError: function(){
-                    if($.isFunction(settings.onFail)) settings.onFail.apply(self, arguments);
+                    self.onFail.apply(self, arguments);
                     self.loader.stopLoading();
                 }
             });
@@ -426,6 +426,16 @@ Q.AsyncForm =  Q.Form.extend('AsyncForm', /** @lends Q.AsyncForm */{
         self._super(container, settings);
         
         self.loader = self.form.Loader({location: self.settings.loaderLocation});
+    },
+    
+    onSuccess: function(){
+        if($.isFunction(this.settings.onSuccess))
+            this.settings.onSuccess.apply(this, arguments);
+    },
+    
+    onFail: function(){
+        if($.isFunction(this.settings.onFail))
+            this.settings.onFail.apply(this, arguments);
     }
 });
 

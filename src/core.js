@@ -121,19 +121,20 @@ if(!$[$.CLASS_NAMESPACE]) $[$.CLASS_NAMESPACE] = {};
     Class.extend = function(/*newClassName, staticMembers, prop*/) {
         
         function isStr(s){return typeof s == "string" || s instanceof String;}
+        function isObj(o){return o instanceof Object;}
         
         // bogle modifications:
         //  * allow for auto creation of a node method.
         //  * allow ability to specify static members
         var newClassName, staticMembers, prop;
         
-        if(arguments.length == 1 && arguments[0] instanceof Object)
+        if(arguments.length == 1 && isObj(arguments[0]))
             prop = arguments[0]; //just prototype extension
-        else if(arguments.length == 2 && arguments[0] instanceof Object && arguments[1] instanceof Object)
+        else if(arguments.length == 2 && isObj(arguments[0]) && isObj(arguments[1]))
             staticMembers = arguments[0], prop = arguments[1];
-        else if(arguments.length == 2 && isStr(arguments[0]) && arguments[1] instanceof Object)
+        else if(arguments.length == 2 && isStr(arguments[0]) && isObj(arguments[1]))
             newClassName = arguments[0], prop = arguments[1];
-        else if(arguments.length == 3 && isStr(arguments[0]) && arguments[1] instanceof Object && arguments[2] instanceof Object)
+        else if(arguments.length == 3 && isStr(arguments[0]) && isObj(arguments[1]) && isObj(arguments[2]))
             newClassName = arguments[0], staticMembers = arguments[1], prop = arguments[2];
         else
             throw new Error('extend() not called correctly!');

@@ -219,9 +219,9 @@ Q.AsyncLoader = Q.Loader.extend('AsyncLoader', /** @lends Q.AsyncLoader */{
          * <pre class="code">
          * ajaxOptions: { //ajaxOptions passed into $.ajax
          *     type: 'POST',
-         *     dataType: 'json',
-         *     onPostLoad: function(){}
+         *     dataType: 'json'
          * }
+         * onPostLoad: function(type, arguments){}
          * </pre>
          */
         defaults: {
@@ -245,6 +245,11 @@ Q.AsyncLoader = Q.Loader.extend('AsyncLoader', /** @lends Q.AsyncLoader */{
     init: function(container, options){
         //must deep copy because of the ajaxOptions...
         this._super(container, $.extend(true, {}, this._class.defaults, options));
+    },
+    
+    _onPostLoad: function(str, args){
+        if($.isFunction(this.settings.onPostLoad))
+            this.settings.onPostLoad.call(self, str, args);
     },
     
     /**
@@ -277,8 +282,7 @@ Q.AsyncLoader = Q.Loader.extend('AsyncLoader', /** @lends Q.AsyncLoader */{
                 
                 self.stopLoading();
                 
-                if($.isFunction(self.settings.onPostLoad))
-                    self.settings.onPostLoad.call(this, str, arguments);
+                self._onPostLoad.call(self, str, arguments);
             };
         }
         
@@ -323,16 +327,23 @@ Q.SingleResourceAsyncLoader = Q.AsyncLoader.extend('SingleResourceAsyncLoader', 
      * @constructs
      **/
     init: function(container, options){
+        var self = this;
         
         var defs = {
             url: '',
             onSuccess: null,
             onFail: null
         };
+        
         this._super(container, $.extend({}, this._class.defaults, options));
         
         this.currentRequest = null;
         this.lastParams = {};
+    },
+    
+    _onPostLoad: function(str, args){
+        this.currentRequest = null;
+        this._super(str, args);
     },
     
     /**
