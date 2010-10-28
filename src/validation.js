@@ -98,10 +98,14 @@ $.ajax = function( options ) {
                     errors.general.push(data.errors[i]);
             }
             
-            if(errors.field.length > 0)
-                Q.asyncErrors.add(errors.field);
+            if(data.errors.length > 0)
+                Q.asyncErrors.add(data.errors, options.form);
             
             options.applicationError.call(this, 'applicationerror', errors);
+            
+            var uh = Q.asyncErrors.getUnhandledErrors();
+            if(uh && $.isFunction(Q.handleApplicationErrors))
+                Q.handleApplicationErrors.call(this, uh);
         }
         
         //So success gets anything that is a 200. However, we may have application
@@ -135,11 +139,18 @@ $.ajax = function( options ) {
         function errorHandler(xhr, status, errorThrown){
             
             if(xhr.status >= 500){
+                var handled = false;
+                var data = null;
+                try {
+                    data = jQuery.httpData( xhr, options.dataType, options );
+                } catch(err) {
+                    $.warn('ERROR: Failed to parse error data from the server. Is your response in', options.dataType, '?', 'Error:', err);
+                }
+                
                 options.applicationError.call(this, 'servererror', xhr.status);
-                Q.handleServerError.call(this, xhr, status, errorThrown);
+                Q.handleServerError.call(this, data, xhr, status, errorThrown);
             }
             else if(xhr.status >= 400){
-                $.log('SERVER ERROR', this.url, '; http status:', xhr.status + ':' + status);
                 try {
                     var data = jQuery.httpData( xhr, options.dataType, options );
                     _handleAppErrors(data);
@@ -172,8 +183,14 @@ $.ajax = function( options ) {
 /**
  * Called on 500 errors. You'll probably want to override this for your own applications.
  */
-Q.handleServerError = function(){
+Q.handleServerError = function(data, xhr, status, errorThrown){
     alert('Oops. An error occurred. Our team has been notified!');
+};
+
+Q.handleApplicationErrors = function(errors){
+    for(var i = 0; i < errors.length; i ++)
+        $.warn('Unhandled async application error "', errors[i].message ,'" :', errors[i]);
+    Q.asyncErrors.handle(errors);
 };
 
 /**
@@ -222,7 +239,8 @@ Q.handleServerError = function(){
  **/
 Q.asyncErrors = {
     
-    errors: {},
+    fieldErrors: {},
+    errors: [],
     
     /**
      * <p>Add a list of errors to this Q.asyncErrors. The form will be revalidated and your
@@ -234,51 +252,73 @@ Q.asyncErrors = {
      *     {field: 'email', value: 'wow@ok', message: 'Email is not valid!'}
      * ]</pre>
      */
-    add: function(errors){
+    add: function(errors, form){
       
-        Q.asyncErrors.clear();
-        if(errors){
-            
-            var form = null;
-            
+        Q.asyncErrors.fieldErrors = {};
+        if(errors)
+            Q.asyncErrors.errors = Q.asyncErrors.errors.concat(errors);
+        
+        if(errors && $.fn.valid){
             //iterate through the fields, and save the errors in our special
             //little errors construct. This construct is what the validation
             //rule will read.
             for(var i = 0; i < errors.length; i++){
-                var field = $('[name="'+ errors[i].field +'"]:visible');
-                if(field.length){
-                    //Infer the form from the field. I hope like hell I am not
-                    //dumb enough to have fields from multiple forms coming back in
-                    //in this errors dict. 
-                    if(!form || form.length == 0)
-                        form = field.parents('form');
-                    
-                    //we save the old value so the rule knows what value caused the error.
-                    //if the value changes, then the field will be valid.
-                    Q.asyncErrors.errors[errors[i].field] = {
-                        message: errors[i].message,
-                        val: field.val()
-                    };
-                }
+                if(! errors[i].field ) continue;
+                
+                var field;
+                if(form)
+                    field = form.find('[name="'+ errors[i].field +'"]');
+                else
+                    field = $('[name="'+ errors[i].field +'"]');
+				if(field.length && field.is(":visible")){
+					//Infer the form from the field. I hope like hell I am not
+					//dumb enough to have fields from multiple forms coming back in
+					//in this errors dict. 
+					if(!form || form.length == 0)
+						form = field.parents('form');
+					
+					//we save the old value so the rule knows what value caused the error.
+					//if the value changes, then the field will be valid.
+					Q.asyncErrors.fieldErrors[errors[i].field] = {
+						message: errors[i].message,
+						val: field.val(),
+                        original: errors[i]
+					};
+				}
+                //else
+                    //if there is an error but we cant find the field, we kick
+                    //it out as a general error. Sketch, but this doesnt happen often.
+                    //unhandledErrors.push(errors[i].message);
             }
             
             //force form validation so the framework will read our new errors.
             if(form){
-                if($.fn.valid)
-                    //there may be multiple forms we need to attend to...
-                    form.each(function(){
-                        $(this).valid();
-                    });
+                //there may be multiple forms we need to attend to...
+                form.each(function(){
+                    $(this).valid();
+                });
             }
         }
-        
+    },
+    
+    handle: function(error){
+        if(!$.isArray(error))
+            error = [error];
+        for(var i = 0; i < error.length; i++)
+            error[i]._handled = true;
     },
 
     /**
-     * <p>Clears all errors.</p>
+     * <p>Gets all the unhandled errors.</p>
      */
-    clear: function(){
-        Q.asyncErrors.errors = {};
+    getUnhandledErrors: function(){
+        var unhandled = [];
+        
+        for(var i = 0; i < Q.asyncErrors.errors.length; i++)
+            if(!Q.asyncErrors.errors[i]._handled)
+                unhandled.push(Q.asyncErrors.errors[i]);
+        
+        return unhandled;
     }
 };
 
@@ -315,15 +355,15 @@ if($.validator && $.fn.validate){
             
             //..and the value that caused the error.
             var err = '';
-            if(element.name in Q.asyncErrors.errors)
-                err = Q.asyncErrors.errors[element.name].val || '';
+            if(element.name in Q.asyncErrors.fieldErrors)
+                err = Q.asyncErrors.fieldErrors[element.name].val || '';
             
             // if this element is connected to another, and it is the display element,
             // concat the connected element's current value and error value.
             if(params instanceof Object && params.connect && params.display){
                 cur += $('[name="'+ params.connect +'"]').val();
-                if(params.connect in Q.asyncErrors.errors)
-                    err += Q.asyncErrors.errors[params.connect].val || '';
+                if(params.connect in Q.asyncErrors.fieldErrors)
+                    err += Q.asyncErrors.fieldErrors[params.connect].val || '';
             }
             
             //if it is connected, but not the display element, just trigger a check
@@ -336,7 +376,7 @@ if($.validator && $.fn.validate){
             //basically: do we have an error for this element?
             //has the element's value NOT changed since we got the error?
             //if both true, fail.
-            fail = (element.name in Q.asyncErrors.errors && cur == err);
+            fail = (element.name in Q.asyncErrors.fieldErrors && cur == err);
             
             return /*this.optional(element) || */ !fail;
         },
@@ -345,7 +385,11 @@ if($.validator && $.fn.validate){
         function(params, element){
             //'this' is the validator
             
-            var message = Q.asyncErrors.errors[element.name].message;
+            var error = Q.asyncErrors.fieldErrors[element.name];
+            
+            var message = error.message;
+            
+            Q.asyncErrors.handle(error.original);
             
             return message;
         }

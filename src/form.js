@@ -178,7 +178,8 @@ Q.Form = Class.extend('Form', /** @lends Q.Form */{
          * validationOptions: {},
          * defaultData: {},
          * resetInitially: false,
-         * onLoad: function(data){}
+         * onLoad: function(data){},
+         * onSubmit: function(form){}
          * </pre>
          */
         defaults: {
@@ -187,7 +188,8 @@ Q.Form = Class.extend('Form', /** @lends Q.Form */{
             defaultData: {},
             resetInitially: false,
             
-            onLoad: function(data){}
+            onLoad: function(data){},
+            onSubmit: function(form, formData){}
         },
         
         /**
@@ -223,7 +225,7 @@ Q.Form = Class.extend('Form', /** @lends Q.Form */{
         else{
             self.form = container.find('form');
             if(!self.form.length){
-                $.log('Cannot find form in', container, '!! You need a form. Fo\' Real!');
+                $.error('Cannot find form in', container, '!! You need a form. Fo\' Real!');
                 return;
             }
         }
@@ -240,6 +242,10 @@ Q.Form = Class.extend('Form', /** @lends Q.Form */{
             
             self._setElementDataFilter(elem, settings.dataTypes[k]);
         }
+        
+        self.form.submit(function(){
+            return self._onSubmit(arguments);
+        });
     },
     
     /**
@@ -271,6 +277,18 @@ Q.Form = Class.extend('Form', /** @lends Q.Form */{
     },
     
     /**
+     * <p>The form's submit event hook. You can return false to </p>
+     * @private
+     */
+    _onSubmit: function(){
+        if($.isFunction(this.settings.onSubmit)){
+            var formData = $.parseUrlParams(this.form.formSerialize());
+            return this.settings.onSubmit.call(this, this.form, formData, arguments);
+        }
+        return true;
+    },
+    
+    /**
      * <p>Will return the HTML element with the name specified if possible.</p>
      * @returns an HTML element corresponding to the passed in name
      */
@@ -281,7 +299,9 @@ Q.Form = Class.extend('Form', /** @lends Q.Form */{
     /**
      * <p>Works like jQuery val() function. If the val parameter is not specified, val()
      * will return the value of the element corresponding to the passed in name. If val param
-     * is specified, it will set the HTML element's value to val.</p>
+     * is specified, it will set the HTML element's value to val. This properly handles
+     * radio buttons and checkboxen. Set radio buttons by specifying the desired radio's
+     * value string. Set checkboxen with a bool.</p>
      *
      * @param name the name of the HTML element to value get/set
      * @param val (optional) the value to set. Will set if specified, will get if not.
@@ -373,7 +393,7 @@ Q.Form = Class.extend('Form', /** @lends Q.Form */{
     }
 });
 
-Q.AsyncForm =  Q.Form.extend('AsyncForm', /** @lends Q.AsyncForm */{
+Q.AsyncForm = Q.Form.extend('AsyncForm', /** @lends Q.AsyncForm */{
         /**
          * <p>Default options. Extends {@link Q.Form} defaults.</p>
          * <pre class="code">
@@ -387,9 +407,10 @@ Q.AsyncForm =  Q.Form.extend('AsyncForm', /** @lends Q.AsyncForm */{
         defaults: {
             loaderLocation: {position: 'absolute', bottom: 5, left: 5},
             ajaxOptions: {dataType: 'json'},
+            autoGenValidationOptions: false,
             validationOptions: {},
             onSuccess: function(data){},
-            onFail: function(data){}
+            onFail: function(errorType, errors){}
         }
     },/** @lends Q.AsyncForm# */{
     /**
@@ -407,9 +428,20 @@ Q.AsyncForm =  Q.Form.extend('AsyncForm', /** @lends Q.AsyncForm */{
         var self = this;
         settings = $.extend(true, {}, self._class.defaults, settings);
         
+        if(settings.autoGenValidationOptions){
+            var rules = settings.validationOptions.rules || {};
+            var inputs = container.find('input, select, textarea');
+            
+            for(var i=0; i < inputs.length; i++)
+                if(!(inputs[i].name in rules))
+                    rules[inputs[i].name] = {required: false};
+            settings.validationOptions.rules = rules;
+        }
+        
         //hook the async form submission to the validation plugin
         settings.validationOptions.submitHandler = function(validForm){
             self.loader.startLoading();
+            settings.ajaxOptions.form = self.form;
             var opts = $.extend(settings.ajaxOptions, {
                 success: function(data){
                     self.onSuccess.apply(self, arguments);
