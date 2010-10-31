@@ -37,3 +37,7 @@ webserver that runs php. I am pretty lazy in this department so I just downloade
 
 Point a simlink from your server's www directory to Quaid's test directory and load
 up test.html.
+
+DOC
+
+Proper docs are at http://benogle.com/quaid.

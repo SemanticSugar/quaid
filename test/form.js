@@ -27,6 +27,8 @@ $(document).ready(function(){
         
         $('#form').data('AsyncForm', null);
         $('#form form').data('AsyncForm', null);
+        
+        Q.asyncErrors.clear();
     }
     
     module('Form');
@@ -143,7 +145,6 @@ $(document).ready(function(){
             onSuccess: function(data){
                 equals(this.TYPE, 'AsyncForm');
                 same(data, {
-                    status: 'success',
                     results: {"lang": "en", "length": 25}
                 });
                 start();

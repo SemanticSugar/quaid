@@ -249,7 +249,7 @@ Q.AsyncLoader = Q.Loader.extend('AsyncLoader', /** @lends Q.AsyncLoader */{
     
     _onPostLoad: function(str, args){
         if($.isFunction(this.settings.onPostLoad))
-            this.settings.onPostLoad.call(self, str, args);
+            this.settings.onPostLoad.call(this, str, args);
     },
     
     /**

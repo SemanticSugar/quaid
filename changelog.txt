@@ -1,0 +1,5 @@
+Quaid Changelog
+
+Version 0.1
+
+ - Initial feature set

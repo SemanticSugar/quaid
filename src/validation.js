@@ -112,25 +112,22 @@ $.ajax = function( options ) {
         //errors coming in (data.status == 'fail'). So we will extract those
         //responses and call the error callback.
         var originalSuccess = options.success || function(){};
-        function successHandler(data, status){
+        function successHandler(data, status, xhr){
             
-            if(data && !data.status && !data.errors){
-                $.log('Hey, you need a "success" or "errors" param on the response data!');
-            }
+            //aborted request causes success to be called with empty data. Boo.
+            if(!xhr.status) return;
             
-            // dump the data into the query analyzer.
-            if(data.debug && Q.DEBUG){
-                Q.DEBUG.addRequest(data.debug);
-            }
+            if(!data)
+                $.warn('No data returned from the server! Request args:', options);
             
-            //just pass through for success....
-            if( data && data.status == 'success' ){
-                originalSuccess.call(this, data, status);
-            }
+            Q.handleSuccess(data, options);
             
-            // failures are a bit more complicated. 
-            else
+            // fail if they have a 'fail' in the status or they specify errors.
+            if( data && (data.status == 'fail' || (data.errors && data.errors.length)))
                 _handleAppErrors(data);
+            // just pass through for success....
+            else
+                originalSuccess.call(this, data, status);
             
         }//end success handler
         options.success = successHandler;
@@ -181,12 +178,22 @@ $.ajax = function( options ) {
 };
 
 /**
+ * Called on every 200 response.
+ **/
+Q.handleSuccess = function(data, options){
+};
+
+/**
  * Called on 500 errors. You'll probably want to override this for your own applications.
  */
 Q.handleServerError = function(data, xhr, status, errorThrown){
     alert('Oops. An error occurred. Our team has been notified!');
 };
 
+/**
+ * On any Application errors. When the server returns a 400, or a status: 'fail' from a
+ * 200 request.
+ **/
 Q.handleApplicationErrors = function(errors){
     for(var i = 0; i < errors.length; i ++)
         $.warn('Unhandled async application error "', errors[i].message ,'" :', errors[i]);
@@ -285,10 +292,6 @@ Q.asyncErrors = {
                         original: errors[i]
 					};
 				}
-                //else
-                    //if there is an error but we cant find the field, we kick
-                    //it out as a general error. Sketch, but this doesnt happen often.
-                    //unhandledErrors.push(errors[i].message);
             }
             
             //force form validation so the framework will read our new errors.
@@ -319,6 +322,11 @@ Q.asyncErrors = {
                 unhandled.push(Q.asyncErrors.errors[i]);
         
         return unhandled;
+    },
+    
+    clear: function(){
+        Q.asyncErrors.errors = [];
+        Q.asyncErrors.fieldErrors = {};
     }
 };
 
