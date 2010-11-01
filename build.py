@@ -23,8 +23,14 @@ THE SOFTWARE.
 """
 
 import os, sys, closureapi
+import getopt
 
 OUT_FILE = 'build/jquery.quaid.min'
+
+#this sucks. apologies.
+JSDOC = '../../jsdoc/'
+
+JSDOC_COMMAND = 'java -jar %(jsd)sjsrun.jar %(jsd)sapp/run.js -d=doc/ -t=%(jsd)stemplates/codeview src/' % {'jsd':JSDOC}
 
 MODULES = [
     'core',
@@ -43,14 +49,72 @@ def filename(module, folder=None):
     dirs.append('%s.js' % module)
     return os.path.join(*dirs)
 
-modules = None
-args = sys.argv[1:]
-if args:
-    modules = [m for m in args if m in MODULES]
+def compress(modules, version=None):
+    """
+    Will compress the modules into a single file.
+    """
+    out = OUT_FILE
+    if version:
+        out = '%s.%s' % (out, version)
+    out = filename(out)
+    
+    fnames = [filename(m, 'src') for m in modules]
+    closureapi.compress(out, fnames, level=1)
+    
+    print 'Compressed to %s' % out
 
-if not modules:
-    modules = MODULES
+def gen_docs():
+    """
+    Generate the jsdoc.
+    """
+    import subprocess, shlex
+    print 'Generating docs...'
+    p = subprocess.Popen(shlex.split(JSDOC_COMMAND))
+    p.wait()
 
-fnames = [filename(m, 'src') for m in modules]
+def usage():
+    print '%s [options] [modules]' % (sys.argv[0],)
+    print 'Options:'
+    print '    -h            -- This'
+    print '    -v <version>  -- The version of the compressed js file'
+    print '    -d            -- Generate docs'
+    print 'Modules:'
+    print '    core log util form widget validation'
 
-closureapi.compress(filename(OUT_FILE), fnames, level=1)
+if __name__ == '__main__':
+    """ Meow """
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "hv:d", ["help", "version=", "docs"])
+    except getopt.GetoptError, err:
+        # print help information and exit:
+        print str(err) # will print something like "option -a not recognized"
+        usage()
+        sys.exit(2)
+    
+    version = None
+    docs = False
+    for o, a in opts:
+        if o in ("-h", "--help"):
+            usage()
+            sys.exit()
+        elif o in ("-v", "--version"):
+            version = a
+        elif o in ("-d", "--docs"):
+            docs = True
+        else:
+            assert False, "unhandled option"
+
+    modules = None
+    if args:
+        modules = [m for m in args if m in MODULES]
+    
+    if not modules:
+        modules = MODULES
+    
+    compress(modules, version)
+    
+    if docs:
+        gen_docs()
+    
+    
+

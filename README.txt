@@ -11,7 +11,7 @@ robustly handling loading.
 
 Quaid is here to help. Promise. It's even in the name. Quaid loosely stands for j(QU)ery (AID).
 
-At the time of writing, Quaid is 17k compressed.
+At the time of writing, Quaid is 19.8k minified.
 
 You're looking at the code repo. Here's what's going on:
 

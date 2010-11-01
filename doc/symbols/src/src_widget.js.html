@@ -135,10 +135,10 @@
 <span class='line'>128</span>                 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">h</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">self.container.height</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>129</span> </span><span class="WHIT">                </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">w</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">self.container.width</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>130</span> </span><span class="WHIT">                </span><span class="NAME">self.setLocation</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>131</span> </span><span class="WHIT">					</span><span class="NAME">position</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'absolute'</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>132</span> </span><span class="WHIT">					</span><span class="NAME">top</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">h</span><span class="PUNC">/</span><span class="NUMB">2</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">objImagePreloader.height</span><span class="PUNC">/</span><span class="NUMB">2</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>131</span> </span><span class="WHIT">                    </span><span class="NAME">position</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'absolute'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>132</span> </span><span class="WHIT">                    </span><span class="NAME">top</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">h</span><span class="PUNC">/</span><span class="NUMB">2</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">objImagePreloader.height</span><span class="PUNC">/</span><span class="NUMB">2</span><span class="PUNC">,</span><span class="WHIT">
 <span class='line'>133</span> </span><span class="WHIT">                    </span><span class="NAME">left</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">w</span><span class="PUNC">/</span><span class="NUMB">2</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">objImagePreloader.width</span><span class="PUNC">/</span><span class="NUMB">2</span><span class="WHIT">
-<span class='line'>134</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>134</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>135</span> </span><span class="WHIT">                
 <span class='line'>136</span>                 </span><span class="NAME">objImagePreloader.onload</span><span class="PUNC">=</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>137</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
@@ -226,9 +226,9 @@
 <span class='line'>219</span>          * &lt;pre class="code">
 <span class='line'>220</span>          * ajaxOptions: { //ajaxOptions passed into $.ajax
 <span class='line'>221</span>          *     type: 'POST',
-<span class='line'>222</span>          *     dataType: 'json',
-<span class='line'>223</span>          *     onPostLoad: function(){}
-<span class='line'>224</span>          * }
+<span class='line'>222</span>          *     dataType: 'json'
+<span class='line'>223</span>          * }
+<span class='line'>224</span>          * onPostLoad: function(type, arguments){}
 <span class='line'>225</span>          * &lt;/pre>
 <span class='line'>226</span>          */</span><span class="WHIT">
 <span class='line'>227</span> </span><span class="WHIT">        </span><span class="NAME">defaults</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
@@ -254,113 +254,124 @@
 <span class='line'>247</span> </span><span class="WHIT">        </span><span class="NAME">this._super</span><span class="PUNC">(</span><span class="NAME">container</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">$.extend</span><span class="PUNC">(</span><span class="KEYW">true</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this._class.defaults</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">options</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>248</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
 <span class='line'>249</span> </span><span class="WHIT">    
-<span class='line'>250</span>     </span><span class="COMM">/**
-<span class='line'>251</span>      * &lt;p>Loads data from the server, shows/hides the loading image, calls your callbacks, makes you coffee.&lt;/p>
-<span class='line'>252</span>      *
-<span class='line'>253</span>      * @param url The url to make the request to
-<span class='line'>254</span>      * @param params An object filled with params to the server
-<span class='line'>255</span>      * @param successfn success callback. If not specified, will use the callback
-<span class='line'>256</span>      * specified in the ajaxOptions. Signature function(data){}
-<span class='line'>257</span>      * @param failfn fail callback. If not specified, will use the callback
-<span class='line'>258</span>      * specified in the ajaxOptions. Signature: function(error_type, errors){}
-<span class='line'>259</span>      */</span><span class="WHIT">
-<span class='line'>260</span> </span><span class="WHIT">    </span><span class="NAME">load</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">url</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">params</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">successfn</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">failfn</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>261</span> </span><span class="WHIT">        
-<span class='line'>262</span>         </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">url</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>263</span> </span><span class="WHIT">            </span><span class="NAME">$.log</span><span class="PUNC">(</span><span class="STRN">'AsyncLoader.load on '</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.container</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">': load() needs a url, f00! Seriously.'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>264</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>265</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>250</span>     </span><span class="NAME">_onPostLoad</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">str</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">args</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>251</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="NAME">$.isFunction</span><span class="PUNC">(</span><span class="NAME">this.settings.onPostLoad</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>252</span> </span><span class="WHIT">            </span><span class="NAME">this.settings.onPostLoad.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">str</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">args</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>253</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>254</span> </span><span class="WHIT">    
+<span class='line'>255</span>     </span><span class="COMM">/**
+<span class='line'>256</span>      * &lt;p>Loads data from the server, shows/hides the loading image, calls your callbacks, makes you coffee.&lt;/p>
+<span class='line'>257</span>      *
+<span class='line'>258</span>      * @param url The url to make the request to
+<span class='line'>259</span>      * @param params An object filled with params to the server
+<span class='line'>260</span>      * @param successfn success callback. If not specified, will use the callback
+<span class='line'>261</span>      * specified in the ajaxOptions. Signature function(data){}
+<span class='line'>262</span>      * @param failfn fail callback. If not specified, will use the callback
+<span class='line'>263</span>      * specified in the ajaxOptions. Signature: function(error_type, errors){}
+<span class='line'>264</span>      */</span><span class="WHIT">
+<span class='line'>265</span> </span><span class="WHIT">    </span><span class="NAME">load</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">url</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">params</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">successfn</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">failfn</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>266</span> </span><span class="WHIT">        
-<span class='line'>267</span>         </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">self</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>268</span> </span><span class="WHIT">        
-<span class='line'>269</span>         </span><span class="NAME">self.startLoading</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>270</span> </span><span class="WHIT">        
-<span class='line'>271</span>         </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">_genHandler</span><span class="PUNC">(</span><span class="NAME">str</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">fn</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>272</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>273</span> </span><span class="WHIT">                </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">fn</span><span class="WHIT">
-<span class='line'>274</span> </span><span class="WHIT">                
-<span class='line'>275</span>                 </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="NAME">$.isFunction</span><span class="PUNC">(</span><span class="NAME">cb</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT">
-<span class='line'>276</span> </span><span class="WHIT">                    </span><span class="NAME">cb.apply</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">arguments</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>277</span> </span><span class="WHIT">                
-<span class='line'>278</span>                 </span><span class="NAME">self.stopLoading</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>267</span>         </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">url</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>268</span> </span><span class="WHIT">            </span><span class="NAME">$.log</span><span class="PUNC">(</span><span class="STRN">'AsyncLoader.load on '</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.container</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">': load() needs a url, f00! Seriously.'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>269</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>270</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>271</span> </span><span class="WHIT">        
+<span class='line'>272</span>         </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">self</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>273</span> </span><span class="WHIT">        
+<span class='line'>274</span>         </span><span class="NAME">self.startLoading</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>275</span> </span><span class="WHIT">        
+<span class='line'>276</span>         </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">_genHandler</span><span class="PUNC">(</span><span class="NAME">str</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">fn</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>277</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>278</span> </span><span class="WHIT">                </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">fn</span><span class="WHIT">
 <span class='line'>279</span> </span><span class="WHIT">                
-<span class='line'>280</span>                 </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="NAME">$.isFunction</span><span class="PUNC">(</span><span class="NAME">self.settings.onPostLoad</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT">
-<span class='line'>281</span> </span><span class="WHIT">                    </span><span class="NAME">self.settings.onPostLoad.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">str</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">arguments</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>282</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>283</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>284</span> </span><span class="WHIT">        
-<span class='line'>285</span>         </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">$.ajax</span><span class="PUNC">(</span><span class="NAME">$.extend</span><span class="PUNC">(</span><span class="NAME">self.settings.ajaxOptions</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>286</span> </span><span class="WHIT">            </span><span class="NAME">url</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">url</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>287</span> </span><span class="WHIT">            </span><span class="NAME">data</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">params</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>288</span> </span><span class="WHIT">            </span><span class="NAME">success</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">_genHandler</span><span class="PUNC">(</span><span class="STRN">'success'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">$.isFunction</span><span class="PUNC">(</span><span class="NAME">successfn</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NAME">successfn</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">self.settings.ajaxOptions.success</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>289</span> </span><span class="WHIT">            </span><span class="NAME">applicationError</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">_genHandler</span><span class="PUNC">(</span><span class="STRN">'fail'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">$.isFunction</span><span class="PUNC">(</span><span class="NAME">failfn</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NAME">failfn</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">self.settings.ajaxOptions.applicationError</span><span class="PUNC">)</span><span class="WHIT">
-<span class='line'>290</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>291</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>292</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>293</span> 
-<span class='line'>294</span> </span><span class="NAME">Q.SingleResourceAsyncLoader</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Q.AsyncLoader.extend</span><span class="PUNC">(</span><span class="STRN">'SingleResourceAsyncLoader'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="COMM">/** @lends Q.SingleResourceAsyncLoader */</span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>295</span> </span><span class="WHIT">        </span><span class="COMM">/**
-<span class='line'>296</span>          * &lt;p>Default options. Extends {@link Q.AsyncLoader} defaults.&lt;/p>
-<span class='line'>297</span>          * &lt;pre class="code">
-<span class='line'>298</span>          * url: '', //Your resource to load
-<span class='line'>299</span>          * onSuccess: function(data){}, //when request is successful
-<span class='line'>300</span>          * onFail: function(error_type, errors){}
-<span class='line'>301</span>          * &lt;/pre>
-<span class='line'>302</span>          */</span><span class="WHIT">
-<span class='line'>303</span> </span><span class="WHIT">        </span><span class="NAME">defaults</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>304</span> </span><span class="WHIT">            </span><span class="NAME">url</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>305</span> </span><span class="WHIT">            </span><span class="NAME">onSuccess</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>306</span> </span><span class="WHIT">            </span><span class="NAME">onFail</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="WHIT">
-<span class='line'>307</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>308</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="COMM">/** @lends Q.SingleResourceAsyncLoader# */</span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>309</span> </span><span class="WHIT">    </span><span class="COMM">/**
-<span class='line'>310</span>      * @class 
-<span class='line'>311</span>      *
-<span class='line'>312</span>      * &lt;p>Will deal with race conditions. Extends the AsyncLoader.&lt;/p>
-<span class='line'>313</span>      *
-<span class='line'>314</span>      * &lt;p>Basically, it provides a load() function. You call init with your url and
-<span class='line'>315</span>      * your call backs. THen you call load() with your params. It will handle race conditions.
-<span class='line'>316</span>      * This is super useful when youre loading data into some interface object that can only accept
-<span class='line'>317</span>      * one set of data at a time, but the user can induce multiple requests.
-<span class='line'>318</span>      * i.e. a dynamically loaded table, a dynamic graph, etc.&lt;/p>
-<span class='line'>319</span>      *
-<span class='line'>320</span>      * @augments Q.AsyncLoader
-<span class='line'>321</span>      * @param container The jQuery object
-<span class='line'>322</span>      * @param options Your config.
-<span class='line'>323</span>      * @constructs
-<span class='line'>324</span>      **/</span><span class="WHIT">
-<span class='line'>325</span> </span><span class="WHIT">    </span><span class="NAME">init</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">container</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">options</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>326</span> </span><span class="WHIT">        
-<span class='line'>327</span>         </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">defs</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>328</span> </span><span class="WHIT">            </span><span class="NAME">url</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>329</span> </span><span class="WHIT">            </span><span class="NAME">onSuccess</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>330</span> </span><span class="WHIT">            </span><span class="NAME">onFail</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="WHIT">
-<span class='line'>331</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>332</span> </span><span class="WHIT">        </span><span class="NAME">this._super</span><span class="PUNC">(</span><span class="NAME">container</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">$.extend</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this._class.defaults</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">options</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>333</span> </span><span class="WHIT">        
-<span class='line'>334</span>         </span><span class="NAME">this.currentRequest</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>335</span> </span><span class="WHIT">        </span><span class="NAME">this.lastParams</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>336</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>337</span> </span><span class="WHIT">    
-<span class='line'>338</span>     </span><span class="COMM">/**
-<span class='line'>339</span>      * &lt;p>Connects an async request to a loading image.&lt;/p>
-<span class='line'>340</span>      *
-<span class='line'>341</span>      * @param params An object filled with params to pass to the server
-<span class='line'>342</span>      */</span><span class="WHIT">
-<span class='line'>343</span> </span><span class="WHIT">    </span><span class="NAME">load</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">params</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>344</span> </span><span class="WHIT">        </span><span class="NAME">this.lastParams</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">params</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NAME">this.lastParams</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>345</span> </span><span class="WHIT">        
-<span class='line'>346</span>         </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">req</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._super</span><span class="PUNC">(</span><span class="NAME">this.settings.url</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.lastParams</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.settings.onSuccess</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.settings.onFail</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>347</span> </span><span class="WHIT">        
-<span class='line'>348</span>         </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="NAME">req</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">this.currentRequest</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>349</span> </span><span class="WHIT">            </span><span class="NAME">this.currentRequest.abort</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>350</span> </span><span class="WHIT">            </span><span class="NAME">this.stopLoading</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>351</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>352</span> </span><span class="WHIT">        </span><span class="NAME">this.currentRequest</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">req</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>353</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>354</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>355</span> 
-<span class='line'>356</span> </span><span class="COMM">//end no conflict</span><span class="WHIT">
-<span class='line'>357</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="NAME">jQuery</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>358</span> </span><span class="COMM">//</span><span class="WHIT">
-<span class='line'>359</span> </span></pre></body></html>
+<span class='line'>280</span>                 </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="NAME">$.isFunction</span><span class="PUNC">(</span><span class="NAME">cb</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>281</span> </span><span class="WHIT">                    </span><span class="NAME">cb.apply</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">arguments</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>282</span> </span><span class="WHIT">                
+<span class='line'>283</span>                 </span><span class="NAME">self.stopLoading</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>284</span> </span><span class="WHIT">                
+<span class='line'>285</span>                 </span><span class="NAME">self._onPostLoad.call</span><span class="PUNC">(</span><span class="NAME">self</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">str</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">arguments</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>286</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>287</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>288</span> </span><span class="WHIT">        
+<span class='line'>289</span>         </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">$.ajax</span><span class="PUNC">(</span><span class="NAME">$.extend</span><span class="PUNC">(</span><span class="NAME">self.settings.ajaxOptions</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>290</span> </span><span class="WHIT">            </span><span class="NAME">url</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">url</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>291</span> </span><span class="WHIT">            </span><span class="NAME">data</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">params</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>292</span> </span><span class="WHIT">            </span><span class="NAME">success</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">_genHandler</span><span class="PUNC">(</span><span class="STRN">'success'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">$.isFunction</span><span class="PUNC">(</span><span class="NAME">successfn</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NAME">successfn</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">self.settings.ajaxOptions.success</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>293</span> </span><span class="WHIT">            </span><span class="NAME">applicationError</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">_genHandler</span><span class="PUNC">(</span><span class="STRN">'fail'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">$.isFunction</span><span class="PUNC">(</span><span class="NAME">failfn</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NAME">failfn</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">self.settings.ajaxOptions.applicationError</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>294</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>295</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>296</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>297</span> 
+<span class='line'>298</span> </span><span class="NAME">Q.SingleResourceAsyncLoader</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Q.AsyncLoader.extend</span><span class="PUNC">(</span><span class="STRN">'SingleResourceAsyncLoader'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="COMM">/** @lends Q.SingleResourceAsyncLoader */</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>299</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>300</span>          * &lt;p>Default options. Extends {@link Q.AsyncLoader} defaults.&lt;/p>
+<span class='line'>301</span>          * &lt;pre class="code">
+<span class='line'>302</span>          * url: '', //Your resource to load
+<span class='line'>303</span>          * onSuccess: function(data){}, //when request is successful
+<span class='line'>304</span>          * onFail: function(error_type, errors){}
+<span class='line'>305</span>          * &lt;/pre>
+<span class='line'>306</span>          */</span><span class="WHIT">
+<span class='line'>307</span> </span><span class="WHIT">        </span><span class="NAME">defaults</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>308</span> </span><span class="WHIT">            </span><span class="NAME">url</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>309</span> </span><span class="WHIT">            </span><span class="NAME">onSuccess</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>310</span> </span><span class="WHIT">            </span><span class="NAME">onFail</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="WHIT">
+<span class='line'>311</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>312</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="COMM">/** @lends Q.SingleResourceAsyncLoader# */</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>313</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>314</span>      * @class 
+<span class='line'>315</span>      *
+<span class='line'>316</span>      * &lt;p>Will deal with race conditions. Extends the AsyncLoader.&lt;/p>
+<span class='line'>317</span>      *
+<span class='line'>318</span>      * &lt;p>Basically, it provides a load() function. You call init with your url and
+<span class='line'>319</span>      * your call backs. THen you call load() with your params. It will handle race conditions.
+<span class='line'>320</span>      * This is super useful when youre loading data into some interface object that can only accept
+<span class='line'>321</span>      * one set of data at a time, but the user can induce multiple requests.
+<span class='line'>322</span>      * i.e. a dynamically loaded table, a dynamic graph, etc.&lt;/p>
+<span class='line'>323</span>      *
+<span class='line'>324</span>      * @augments Q.AsyncLoader
+<span class='line'>325</span>      * @param container The jQuery object
+<span class='line'>326</span>      * @param options Your config.
+<span class='line'>327</span>      * @constructs
+<span class='line'>328</span>      **/</span><span class="WHIT">
+<span class='line'>329</span> </span><span class="WHIT">    </span><span class="NAME">init</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">container</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">options</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>330</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">self</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>331</span> </span><span class="WHIT">        
+<span class='line'>332</span>         </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">defs</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>333</span> </span><span class="WHIT">            </span><span class="NAME">url</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>334</span> </span><span class="WHIT">            </span><span class="NAME">onSuccess</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>335</span> </span><span class="WHIT">            </span><span class="NAME">onFail</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="WHIT">
+<span class='line'>336</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>337</span> </span><span class="WHIT">        
+<span class='line'>338</span>         </span><span class="NAME">this._super</span><span class="PUNC">(</span><span class="NAME">container</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">$.extend</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this._class.defaults</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">options</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>339</span> </span><span class="WHIT">        
+<span class='line'>340</span>         </span><span class="NAME">this.currentRequest</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>341</span> </span><span class="WHIT">        </span><span class="NAME">this.lastParams</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>342</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>343</span> </span><span class="WHIT">    
+<span class='line'>344</span>     </span><span class="NAME">_onPostLoad</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">str</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">args</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>345</span> </span><span class="WHIT">        </span><span class="NAME">this.currentRequest</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>346</span> </span><span class="WHIT">        </span><span class="NAME">this._super</span><span class="PUNC">(</span><span class="NAME">str</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">args</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>347</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>348</span> </span><span class="WHIT">    
+<span class='line'>349</span>     </span><span class="COMM">/**
+<span class='line'>350</span>      * &lt;p>Connects an async request to a loading image.&lt;/p>
+<span class='line'>351</span>      *
+<span class='line'>352</span>      * @param params An object filled with params to pass to the server
+<span class='line'>353</span>      */</span><span class="WHIT">
+<span class='line'>354</span> </span><span class="WHIT">    </span><span class="NAME">load</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">params</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>355</span> </span><span class="WHIT">        </span><span class="NAME">this.lastParams</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">params</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NAME">this.lastParams</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>356</span> </span><span class="WHIT">        
+<span class='line'>357</span>         </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">req</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._super</span><span class="PUNC">(</span><span class="NAME">this.settings.url</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.lastParams</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.settings.onSuccess</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.settings.onFail</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>358</span> </span><span class="WHIT">        
+<span class='line'>359</span>         </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="NAME">req</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">this.currentRequest</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>360</span> </span><span class="WHIT">            </span><span class="NAME">this.currentRequest.abort</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>361</span> </span><span class="WHIT">            </span><span class="NAME">this.stopLoading</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>362</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>363</span> </span><span class="WHIT">        </span><span class="NAME">this.currentRequest</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">req</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>364</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>365</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>366</span> 
+<span class='line'>367</span> </span><span class="COMM">//end no conflict</span><span class="WHIT">
+<span class='line'>368</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="NAME">jQuery</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>369</span> </span><span class="COMM">//</span><span class="WHIT">
+<span class='line'>370</span> </span></pre></body></html>
