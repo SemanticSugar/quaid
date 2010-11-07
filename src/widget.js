@@ -164,7 +164,7 @@ Q.Loader = Class.extend('Loader',/** @lends Q.Loader */{
         if(this.isLoading()){
             if(!this.oldOpacity || this.oldOpacity == '1')
                 //remove opacity or opacity:1 will hose everything in IE. 
-                this.container.css('opacity', null);
+                this.container.css('opacity', '');
             else
                 this.container.css('opacity', this.oldOpacity);
             this.loader.css('display', 'none');
