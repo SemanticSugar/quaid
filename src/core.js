@@ -57,6 +57,12 @@ if(!$[$.CLASS_NAMESPACE]) $[$.CLASS_NAMESPACE] = {};
     // add Class to window (this is window)
     this.Class = function(){
     };
+    
+    this.Class.prototype._ctor = function(){
+        if ( $.isFunction(this.init) )
+            this.init.apply(this, arguments);
+    };
+    
     /**
      * <p>The base class constructor. Provides setting extension. Puts the settings in
      * this.settings. Puts the container element in this.container. This constructor takes
@@ -74,6 +80,7 @@ if(!$[$.CLASS_NAMESPACE]) $[$.CLASS_NAMESPACE] = {};
      * @name Q.Class
      */
     this.Class.prototype.init = function(container, settings, defaults){
+        //TODO: pull this stuff out. it is already in Q.Module
         this.container = container;
         this.settings = $.extend({}, defaults, settings);
     };
@@ -208,9 +215,8 @@ if(!$[$.CLASS_NAMESPACE]) $[$.CLASS_NAMESPACE] = {};
         // The dummy class constructor
         function Class() {
             // All construction is actually done in the init method
-            if ( !initializing && this.init )
-                this.init.apply(this, arguments);
-            //this._class = Class;
+            if ( !initializing && this._ctor )
+                this._ctor.apply(this, arguments);
         }
         
         if(staticMembers)
@@ -232,5 +238,71 @@ if(!$[$.CLASS_NAMESPACE]) $[$.CLASS_NAMESPACE] = {};
         return Class;
     };
 })();
+
+Q.Module = Class.extend('Module', {
+    eventSplitter: /^(\w+)\s*(.*)$/,
+    
+    init: function(container, settings, defaults){
+        this.container = container;
+        this.settings = $.extend({}, defaults, settings);
+        if(!this.el) this.delegateEvents();
+        this.cacheNodes();
+    },
+    
+    $: function(selector, element) {
+        return $(selector, this.container || element);
+    },
+    
+    //these are here as dummies. If you install backbone, they will be used.
+    /*@ignore*/
+    trigger: function(){},
+    /*@ignore*/
+    bind: function(){},
+    /*@ignore*/
+    unbind: function(){},
+    
+    /**
+     * Verbatim from backbonejs because it is genius.
+     * 
+     * <p>Get callbacks, where `this.callbacks` is a hash of</p>
+     *
+     * *{"event selector": "callback"}*
+     *
+     *     {
+     *       'mousedown .title':  'edit',
+     *       'click .button':     'save'
+     *     }
+     *
+     * pairs. Callbacks will be bound to the view, with `this` set properly.
+     * Uses jQuery event delegation for efficiency.
+     * Omitting the selector binds the event to `this.el`.
+     * This only works for delegate-able events: not `focus`, `blur`, and
+     * not `change`, `submit`, and `reset` in Internet Explorer.
+     */
+    delegateEvents: function(events) {
+        if (!this.container || !(events || (events = this.events))) return;
+        this.container.unbind();
+        for (var key in events) {
+            var methodName = events[key];
+            var match = key.match(this.eventSplitter);
+            var eventName = match[1], selector = match[2];
+            var method = _.bind(this[methodName], this);
+            if (selector === '') {
+                this.container.bind(eventName, method);
+            } else {
+                this.container.delegate(selector, eventName, method);
+            }
+        }
+    },
+    
+    cacheNodes: function(nodes){
+        if (!this.container || !(nodes || (nodes = this.n))) return;
+        //copy or we'll get hosed when multiple instances of 'this' object are created
+        this.n = $.extend({}, nodes); 
+        
+        for(var key in this.n)
+            this.n[key] = this.$(this.n[key]);
+    }
+})
 
 })(jQuery);

@@ -164,7 +164,7 @@ Q.DecimalBox = Q.IntBox.extend('DecimalBox', /** @lends Q.DecimalBox# */{
     }
 });
 
-Q.Form = Class.extend('Form', /** @lends Q.Form */{
+Q.Form = Q.Module.extend('Form', /** @lends Q.Form */{
         //static members
         /**
          * <p>Default options.</p>
@@ -187,6 +187,10 @@ Q.Form = Class.extend('Form', /** @lends Q.Form */{
             validationOptions: {},
             defaultData: {},
             resetInitially: false,
+            
+            submitters: null,
+            disableSubmittersOnSubmit: true,
+            disabledClass: 'disabled',
             
             onLoad: function(data){},
             onSubmit: function(form, formData){}
@@ -230,7 +234,32 @@ Q.Form = Class.extend('Form', /** @lends Q.Form */{
             }
         }
         
+        self.form.submit(function(){
+            return self._onSubmit(arguments);
+        });
+        
+        settings.validationOptions.invalidHandler = function(){
+            self._submittersEnable(true);
+        };
+        
         self.form.validate(settings.validationOptions);
+        
+        settings.submitters = $.getjQueryObject(settings.submitters);
+        if(!settings.submitters)
+            settings.submitters = self.form.find('input[type="submit"]');
+        
+        settings.submitters.click(function(e){
+            var targ = $(this);
+            if(targ.hasClass(settings.disabledClass)){
+                e.stopPropigation();
+                return false;
+            }
+            
+            if(targ.is(':not(:submit)')){
+                self.submit();
+                return false;
+            }
+        });
         
         if(settings.resetInitially)
             this.reset();
@@ -242,10 +271,6 @@ Q.Form = Class.extend('Form', /** @lends Q.Form */{
             
             self._setElementDataFilter(elem, settings.dataTypes[k]);
         }
-        
-        self.form.submit(function(){
-            return self._onSubmit(arguments);
-        });
     },
     
     /**
@@ -281,11 +306,30 @@ Q.Form = Class.extend('Form', /** @lends Q.Form */{
      * @private
      */
     _onSubmit: function(){
-        if($.isFunction(this.settings.onSubmit)){
-            var formData = $.parseUrlParams(this.form.formSerialize());
+        if(this.settings.disableSubmittersOnSubmit)
+            this._submittersEnable(false);
+        
+        var formData = $.parseUrlParams(this.form.formSerialize());
+        
+        this.trigger('submit', this, this.form, formData, arguments);
+        if($.isFunction(this.settings.onSubmit))
             return this.settings.onSubmit.call(this, this.form, formData, arguments);
-        }
         return true;
+    },
+    
+    _submittersEnable: function(enable){
+        var self = this;
+        if(self.settings.submitters)
+            self.settings.submitters.each(function(){
+                var elem = $(this);
+                
+                if(elem.is('input') && !enable)
+                    elem.attr('disabled', 'disabled');
+                else if(elem.is('input') && enable)
+                    elem.removeAttr('disabled');
+                
+                elem[enable ? 'removeClass' : 'addClass'](self.settings.disabledClass);
+            });
     },
     
     /**
@@ -399,6 +443,7 @@ Q.AsyncForm = Q.Form.extend('AsyncForm', /** @lends Q.AsyncForm */{
          * <pre class="code">
          * loaderLocation: {position: 'absolute', bottom: 5, left: 5}, //passed into Q.Loader
          * ajaxOptions: {dataType: 'json'}, //passed into $.ajax()
+         * autoGenValidationOptions: false, //will auto generate validation rules for each element
          * validationOptions: {}, //passed into the validation plugin
          * onSuccess: function(data){},
          * onFail: function(err_type, errors){}
@@ -441,14 +486,15 @@ Q.AsyncForm = Q.Form.extend('AsyncForm', /** @lends Q.AsyncForm */{
         //hook the async form submission to the validation plugin
         settings.validationOptions.submitHandler = function(validForm){
             self.loader.startLoading();
+            
             settings.ajaxOptions.form = self.form;
             var opts = $.extend(settings.ajaxOptions, {
                 success: function(data){
-                    self.onSuccess.apply(self, arguments);
+                    self._onSuccess.apply(self, arguments);
                     self.loader.stopLoading();
                 },
                 applicationError: function(){
-                    self.onFail.apply(self, arguments);
+                    self._onFail.apply(self, arguments);
                     self.loader.stopLoading();
                 }
             });
@@ -458,16 +504,29 @@ Q.AsyncForm = Q.Form.extend('AsyncForm', /** @lends Q.AsyncForm */{
         self._super(container, settings);
         
         self.loader = self.form.Loader({location: self.settings.loaderLocation});
+        self.loader.bind('loading', function(){
+            self.trigger.apply(self, ['loading'].concat(Array.prototype.slice.call(arguments)));
+        });
     },
     
-    onSuccess: function(){
+    _onSuccess: function(){
+        var enable = true;
+        
+        this.trigger.apply(this, ['success', this].concat(Array.prototype.slice.call(arguments)));
+        
         if($.isFunction(this.settings.onSuccess))
-            this.settings.onSuccess.apply(this, arguments);
+            enable = this.settings.onSuccess.apply(this, arguments) != false;
+        
+        if(enable && this.settings.disableSubmittersOnSubmit)
+            this._submittersEnable(enable);
     },
     
-    onFail: function(){
+    _onFail: function(){
+        this.trigger.apply(this, ['fail', this].concat(Array.prototype.slice.call(arguments)));
+        
         if($.isFunction(this.settings.onFail))
             this.settings.onFail.apply(this, arguments);
+        this._submittersEnable(true);
     }
 });
 

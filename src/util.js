@@ -46,6 +46,28 @@ $.extend($, /** @lends $ */{
     },
     
     /**
+     * <p>Will get a jQuery object from method. This is useful for plugins that pass in
+     * elements as options. You can call this with your this context, and it will get passed to
+     * the user's function if method is a function.</p>
+     * @param method Can be a string, jquery object, or a function that returns a jquery object.
+     **/
+    getjQueryObject: function(method){
+        if(!method)
+            return null;
+        
+        if(method.jquery)
+            return method;
+        
+        else if($.isString(method))
+            return $(method);
+        
+        else if($.isFunction(method))
+            return method.call(this);
+        
+        return null;
+    },
+    
+    /**
      * <p>Will round a number to a certain number of decimal places.</p>
      * @param num Your number to round
      * @param rlength The number of decimals to round to.
@@ -413,8 +435,19 @@ $.extend($, /** @lends $ */{
     /**
      * <p>Redirect to some other url. Nothing fancy.</p>
      **/
-    redirect: function(url){
-        window.location.replace(url);
+    redirect: function(url, history){
+        if(history == false)
+            window.location.replace(url);
+        else{
+            //a form adds the current page to the history
+            var form = $('<form/>', {
+                action: url,
+                method: 'get',
+                html: '&nbsp;'
+            });
+            $('body').append(form);
+            form.submit().hide();
+        }
     },
     
     /**

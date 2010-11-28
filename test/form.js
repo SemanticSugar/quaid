@@ -94,7 +94,7 @@ $(document).ready(function(){
     });
     
     test('Form validation', function(){
-        expect(4);
+        expect(5);
         
         var valid = {
             rules: {
@@ -117,6 +117,8 @@ $(document).ready(function(){
         ok(f.getElement('text').hasClass('error'));
         ok(f.getElement('area').hasClass('error'));
         
+        equals($('#form').find(':submit').attr('disabled'), false);
+        
         tear();
     });
     
@@ -136,7 +138,7 @@ $(document).ready(function(){
     });
     
     test('AsyncForm success', function(){
-        expect(3);
+        expect(4);
         
         var f = $('#form').AsyncForm({
             validationOptions: {
@@ -147,6 +149,7 @@ $(document).ready(function(){
                 same(data, {
                     results: {"lang": "en", "length": 25}
                 });
+                equals(this.form.find(':submit').attr('disabled'), true);
                 start();
             }
         });

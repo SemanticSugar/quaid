@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 var Q = $[$.QUAID];
 
-Q.Loader = Class.extend('Loader',/** @lends Q.Loader */{
+Q.Loader = Q.Module.extend('Loader',/** @lends Q.Loader */{
         /**
          * <p>Default options.</p>
          * <pre class="code">
@@ -199,6 +199,7 @@ Q.Loader = Class.extend('Loader',/** @lends Q.Loader */{
     startLoading: function(){
         this.loadingCount++;
         
+        this.trigger('loading', this, true);
         this._show();
     },
     
@@ -208,8 +209,10 @@ Q.Loader = Class.extend('Loader',/** @lends Q.Loader */{
     stopLoading: function(){
         this.loadingCount = Math.max(0, this.loadingCount-1);
         
-        if(this.loadingCount == 0)
+        if(this.loadingCount == 0){
             this._hide();
+            this.trigger('loading', this, false);
+        }
     }
 });
 

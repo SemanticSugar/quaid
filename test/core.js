@@ -292,6 +292,22 @@ $(document).ready(function(){
         same($.parseUrlParams(null), {});
     });
     
+    test('getjQueryObject', function(){
+        expect(7);
+        
+        equals($.getjQueryObject(null), null);
+        equals($.getjQueryObject(), null);
+        
+        equals($.getjQueryObject('#form').length, 1);
+        equals($.getjQueryObject('#form')[0].id, 'form');
+        equals($.getjQueryObject($('#form'))[0].id, 'form');
+        
+        equals($.getjQueryObject.call(42, function(){
+            equals(this, 42);
+            return $('#form');
+        })[0].id, 'form');
+    });
+    
     
     module('DataFormatters');
     
