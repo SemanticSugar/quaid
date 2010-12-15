@@ -26,8 +26,6 @@ THE SOFTWARE.
 ;(function($){
 //
 
-var Q = $[$.QUAID];
-
 Q.Textbox = Class.extend('Textbox', /** @lends Q.Textbox# */{
     
     /**
@@ -45,7 +43,7 @@ Q.Textbox = Class.extend('Textbox', /** @lends Q.Textbox# */{
     
     /** <p>Pass through to jQuery's input.val() method</p> */
     val: function(value){
-        return this.box.val(value);
+        return value ? this.box.val(value) : this.box.val();
     },
     
     /** <p>Gets the currently selected text in the box.</p> */
@@ -93,14 +91,12 @@ Q.IntBox = Q.Textbox.extend('IntBox', /** @lends Q.IntBox# */{
             maxDigits: 7
         };
         
-        var settings = $.extend({}, this.defaults, options);
+        var settings = $.extend(true, {}, this.defaults, options);
         
         this._super(box, settings);
         
-        self = this;
         
-        this.box.keypress(function (e){
-            
+        (function(self){self.box.keypress(function (e){
             //check for max number of digits. But still let them type control chars,
             //and integers if they have selected something (resulting in an overwrite)
             if(self.val().length > settings.maxDigits-1 && !(e.which in Q.controlChars) && !self.getSelection())
@@ -111,7 +107,7 @@ Q.IntBox = Q.Textbox.extend('IntBox', /** @lends Q.IntBox# */{
                 return settings.onFail.call(self, e.which);
             
             return true;
-        });
+        });})(this);
         
         return this;
     },
@@ -251,7 +247,7 @@ Q.Form = Q.Module.extend('Form', /** @lends Q.Form */{
         settings.submitters.click(function(e){
             var targ = $(this);
             if(targ.hasClass(settings.disabledClass)){
-                e.stopPropigation();
+                e.stopPropagation();
                 return false;
             }
             

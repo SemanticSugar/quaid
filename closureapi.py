@@ -83,6 +83,13 @@ def compress(out_file, input_fnames, level=DEFAULT_LEVEL):
     out.write(compressed)
     out.close()
     
+def usage():
+    print '%s [options] [jsfiles]' % (sys.argv[0],)
+    print 'Options:'
+    print '    -h            -- This.'
+    print '    -o <outfile>  -- output file'
+    print '    -l            -- Int index in [WHITESPACE_ONLY, SIMPLE_OPTIMIZATIONS, ADVANCED_OPTIMIZATIONS]'
+
 if __name__ == '__main__':
     opts, args = getopt.getopt(sys.argv[1:], 'ho:l:', ['help', 'output=', 'level='])
     
@@ -101,5 +108,9 @@ if __name__ == '__main__':
             except TypeError: 
                 usage()
                 sys.exit(1)
+    
+    if not args:
+        usage()
+        sys.exit(1)
     
     compress(out_file, args, level)

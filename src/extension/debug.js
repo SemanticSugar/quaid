@@ -5,9 +5,46 @@
  ******************************************************************************/
 
 (function($) {
-	
+
+Class.extend('_Toggler', {
+    init: function(container, settings){
+        var defaults = {
+            trigger: null, // give me a string, jQuery object or function
+            isOpen: true,   // open by default?
+            onToggle: function(){ return false; }
+        };
+        
+        this._super(container, $.extend({}, defaults, settings));
+        
+        var s = this.settings;
+        this._trigger = $(s.trigger);
+        
+        this._setup();
+    },
+    
+    _setup: function(){
+        var self = this;
+        this._trigger.click(function(e){
+            return self.toggle(e);
+        });
+        
+        this.settings.isOpen ? this.open() : this.close();
+    },
+    
+    close: function(){this.container.hide();},
+    open: function(){this.container.show();},
+    toggle: function(e){
+        var fn = this.container.css('display') == 'none' ? 'open' : 'close';
+        this[fn]();
+        
+        return this.settings.onToggle.call(this, this._trigger, this.container, fn, e);
+    }
+});
+
+
 Q.DebugBar = Q.Module.extend('DebugBar', {
-	
+	SELECT: /((SELECT|select) )(.*?)( FROM.*)/i,
+    
 	init: function(container, options){
         var self = this;
 		
@@ -17,7 +54,8 @@ Q.DebugBar = Q.Module.extend('DebugBar', {
                 queries: 'number',
                 query_time: 'decimal(3)',
                 total_time: 'decimal(3)'
-            }
+            },
+            isOpen: true
         };
         
         var settings = $.extend({}, defs, options);
@@ -33,6 +71,9 @@ Q.DebugBar = Q.Module.extend('DebugBar', {
         this.totalTime = container.find('.total-info .total-time');
         
         this.requests = container.find('#requests');
+        
+        node = Q.DebugBar.renderRequest.call(this, settings.data, settings);
+        this.requests.append(node);
         
         this.requests.click(function(e){
             var targ = $(e.target);
@@ -56,25 +97,26 @@ Q.DebugBar = Q.Module.extend('DebugBar', {
         this._updateRequestContainerSize(container.height())
         
         // make it resizable
-        container.resizable({
-            handles: 'n',
-            resize: function(e, ui){
-                container.css({height: ui.size.height+'px', top: null, width: null});
-                self._updateRequestContainerSize(ui.size.height);
-                return false;
-            },
-            stop: function(){
-                self._updateRequestContainerSize(container.height());
-                self._setCookie(self.SIZE_COOKIE_KEY, container.height());
-            }
-        });
+        if($.isFunction(container.resizable))
+            container.resizable({
+                handles: 'n',
+                resize: function(e, ui){
+                    container.css({height: ui.size.height+'px', top: null, width: null});
+                    self._updateRequestContainerSize(ui.size.height);
+                    return false;
+                },
+                stop: function(){
+                    self._updateRequestContainerSize(container.height());
+                    self._setCookie(self.SIZE_COOKIE_KEY, container.height());
+                }
+            });
         
         //minification handlage
         var fullCookie = this._getCookie(this.FULL_COOKIE_KEY);
         this._changeMinification(fullCookie);
         container.find('.total-info, .mini').bind('dblclick', function(){
-            var cookie = self._getCookie(self.FULL_COOKIE_KEY);
-            self._changeMinification(cookie == 'show' ? 'hide' : 'show');
+            //var cookie = self._getCookie(self.FULL_COOKIE_KEY);
+            self._changeMinification(self.$('.full').is(':visible') ? 'hide' : 'show');
         });
         
         //setup the initial request line!
@@ -89,7 +131,7 @@ Q.DebugBar = Q.Module.extend('DebugBar', {
     _getCookie: function(key){
         if($.cookie)
             return $.cookie(key);
-        return 'show';
+        return this.settings.isOpen ? 'show' : 'hide';
     },
     
     _updateRequestContainerSize: function(containerHeight){
@@ -134,11 +176,9 @@ Q.DebugBar = Q.Module.extend('DebugBar', {
             exp.append(elt).append(q);
             el.after(exp);
             
-            el.toggler({
-                linkText: null,
-                animationSpeed: 0,
-                toToggle: exp,
-                initiallyHidden: false
+            exp._Toggler({
+                trigger: el,
+                isOpen: true
             });
             
             el.data('hasrun', true);
@@ -148,14 +188,13 @@ Q.DebugBar = Q.Module.extend('DebugBar', {
     }, //end explain
     
     _setupRequest: function(req){
-        req.find('.info').toggler({
-            linkText: null,
-            toToggle: req.find('.queries, .detail'),
-            animationSpeed: 0,
+        req.find('.queries, .detail')._Toggler({
+            trigger: req.find('.info'),
+            isOpen: false,
             onToggle: function(link, content, fn, event){
                 var targ = $(event.target);
-                if(targ.is('a')) return false;
-                return true;
+                if(targ.is('a')) return true;
+                return false;
             }
         });
     },
@@ -174,9 +213,8 @@ Q.DebugBar = Q.Module.extend('DebugBar', {
         update(this.totalQueryTime, data.query_time, parseFloat, 'decimal(3)');
         update(this.totalTime, data.total_time, parseFloat, 'decimal(3)');
         
-        var req = $(data.request_html);
+        var req = Q.DebugBar.renderRequest.call(this, data, this.settings);
         this._setupRequest(req);
-        
         this.requests.append(req);
         
         //ghetto length restriction.
@@ -228,8 +266,13 @@ Q.DebugBar = Q.Module.extend('DebugBar', {
         this._setupRequest(error);
         this.requests.append(error);
         
-        alert([data.message, data.file, 'Line #' + data.line].join('\n'));
+        var msg = [data.message, data.file, 'Line #' + data.line].join('\n');
+        if(Q.error) Q.error(msg);
+        else alert(msg);
     },
+    
+    show: function(){ this._changeMinification('show'); },
+    hide: function(){ this._changeMinification('hide'); },
     
     addRequest: function(data){
         if(data.queries)
@@ -275,26 +318,143 @@ Q.DebugBar.render = function(settings){
     return $($.replace(template, d));
 };
 
+Q.DebugBar.renderRequest = function(request, settings, sync){
+    /**
+     * data = {
+        'queries': 10,
+        'query_time': 0.234,
+        'total_time': 0.256,
+        'requested_url': '/blah',
+        'query_data': [{'query': q, 'time': t} for q, t in queries]
+       }
+     */
+    var df = Q.DataFormatters.get;
+    
+    var has_more = request.queries > request.query_data.length;
+    var qcount = {};
+    for( var i = 0; i < request.query_data.length; i++ ){
+        var query = request.query_data[i].query;
+        var query_time = request.query_data[i].time;
+        if(query in qcount){
+            qcount[query].count++;
+            qcount[query].times.push(query_time);
+        }
+        else
+            qcount[query] = {count: 1, times: [query_time]};
+    }
+    
+    var d = { sync_class: sync ? 'sync-request' : '' };
+    for(var k in request){
+        d[k] = request[k];
+        if(settings.formatters[k])
+            d[k] = df(settings.formatters[k], request[k]);
+    }
+    
+    var requestTemplate = '<div class="request {sync_class}"> \
+        <div class="info"> \
+            <span class="data-chunk first"> \
+                <span class="total-queries data">{queries}</span> queries \
+            </span> \
+            <span class="data-chunk"> \
+                Query Time: <span class="total-query-time data">{query_time}</span> sec \
+            </span> \
+            <span class="data-chunk"> \
+                Total Time: <span class="total-time data">{total_time}</span> sec \
+            </span> \
+            <span class="data-chunk requested-url">{requested_url}</span> \
+        </div> \
+        <div class="queries"></div></div>';
+    
+    var statementTemplate = '<div class="query"> {query} \
+        <div class="query-time"> {duplicated}\
+            Query Time: {times} \
+        </div></div>';
+    
+    var r = $($.replace(requestTemplate, d));
+    var queries = r.find('.queries');
+    
+    for( var i = 0; i < request.query_data.length; i++ ){
+        var query = request.query_data[i].query;
+        var query_time = request.query_data[i].time;
+        var meta = qcount[query];
+        query = query.replace('\n', ' ').replace('\r', ' ');
+        
+        if(!meta.rendered){
+            var qdict = {
+                query: query,
+                duplicated: ''
+            }
+            window.QUERY = query;
+            var issel = this.SELECT.test(query);
+            if(issel){
+                var p = this.SELECT.exec(query);
+                qdict.query = $.replace('<a href="#" class="debug-explain">{1}* {4} <span class="query-text" style="display: none">{1} {3} {4}</span></a>', p);
+            }
+            if(meta.count > 1)
+                qdict.duplicated = '<span class="data">Duplicated ' + meta.count + 'x;</span>';
+            
+            for(var j = 0; j < meta.times.length; j++){
+                meta.times[j] = '<span class="data">' + df('decimal(4)', meta.times[j]) + ' sec</span>';
+            }
+            qdict.times = meta.times.join(', ');
+            queries.append($($.replace(statementTemplate, qdict)));
+        }
+        meta.rendered = true;
+    }
+        
+    if(has_more){
+        <div class="query">
+            This list has been truncated. 
+        </div>
+    }
+    
+    return r;
+};
+
 //install itself.
 Q.handleServerError = function(data, xhr, status, errorThrown){
-    if(data && data.debug && data.debug.exception_type && Q.DEBUG)
-        Q.DEBUG.addRequest(data.debug);
-    else
-        alert('Oops. An error occurred. Our team has been notified!');
+    if(data && data.debug && data.debug.exception_type && window.DEBUG)
+        DEBUG.addRequest(data.debug);
+    else{
+        if(Q.error)
+            Q.error('Oops. An error occurred. Our team has been notified!');
+        else
+            alert('Oops. An error occurred. Our team has been notified!');
+    }
 };
 
 Q.handleSuccess = function(data, options){
     // dump the data into the query analyzer.
-    if(data.debug && Q.DEBUG){
-        Q.DEBUG.addRequest(data.debug);
+    if(data.debug && DEBUG){
+        DEBUG.addRequest(data.debug);
     }
 };
 
-
-$(document).ready(function(){
-    Q.DEBUG = $('#fancy-debug-bar').DebugBar();
-    Q.ERROR_DISPLAY = $('#error-display').ErrorDisplay();
-});
+//global js error catching
+Q.WindowErrorUrl = null; //'/api/v1/error/jserror'
+var oldwinerr = window.onerror;
+window.onerror = function(err, file, line){
+    if($.isFunction(window.onerror)) window.onerror.apply(this, arguments);
+    
+    if(Q.WindowErrorUrl){
+        var flash = 'None';
+        if($.flash.available)
+            flash = $.replace('{0}.{1}.r{2}', [$.flash.version.major, $.flash.version.minor, $.flash.version.release])
+        
+        var errorJson = {
+            error: err || 'Unknown',
+            file: file || 'Unknown',
+            line: line || 0,
+            user_agent: navigator.userAgent,
+            url: document.location.href,
+            flash: flash
+        };
+        
+        setTimeout(function(){
+            $.postJSON(Q.WindowErrorUrl, {error: $.toJSON(errorJson)});
+        }, 100);
+    }
+};
 
 //end conflict resolution	
 })(jQuery);				

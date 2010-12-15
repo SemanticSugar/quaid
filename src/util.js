@@ -446,6 +446,16 @@ $.extend($, /** @lends $ */{
                 html: '&nbsp;'
             });
             $('body').append(form);
+            
+            var p = $.parseUrlParams(url);
+            for(var k in p){
+                form.append($('<input/>', {
+                    type: 'hidden',
+                    name: k,
+                    value: p[k]
+                }));
+            }
+            
             form.submit().hide();
         }
     },
