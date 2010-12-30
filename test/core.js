@@ -353,6 +353,9 @@ $(document).ready(function(){
         
         val = DI.decimal(213456.34567, 3);
         equals(val, '213,456.346');
+        
+        val = DI.decimal(213456.0, 3);
+        equals(val, '213,456.000');
     });
     
     test('percent', function(){
@@ -366,6 +369,12 @@ $(document).ready(function(){
     test('dollar', function(){
         var val = DI.dollar(0.2345);
         equals(val, '$0.23');
+        
+        var val = DI.dollar(3.0);
+        equals(val, '$3.00');
+        
+        var val = DI.dollar(3.1);
+        equals(val, '$3.10');
         
         val = DI.dollar(213456.34567);
         equals(val, '$213,456.35');

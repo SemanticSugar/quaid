@@ -447,13 +447,15 @@ $.extend($, /** @lends $ */{
             });
             $('body').append(form);
             
-            var p = $.parseUrlParams(url);
-            for(var k in p){
-                form.append($('<input/>', {
-                    type: 'hidden',
-                    name: k,
-                    value: p[k]
-                }));
+            if(url.indexOf('?') > -1){
+                var p = $.parseUrlParams(url);
+                for(var k in p){
+                    form.append($('<input/>', {
+                        type: 'hidden',
+                        name: k,
+                        value: p[k]
+                    }));
+                }
             }
             
             form.submit().hide();
@@ -581,7 +583,20 @@ Q.DataFormatters = {
      */
     decimal: function(data, decimals){
         if($.isString(data)) return data;
-        return !data ? '0' : $.commifyNumber($.round(data, decimals == undefined ? 4 : decimals) + '');
+        var d = !data ? '0' : $.commifyNumber($.round(data, decimals == undefined ? 4 : decimals) + '');
+        
+        var dec = d.indexOf('.');
+        if(decimals > 0){
+            var num = decimals;
+            if(dec > -1)
+                num = Math.max(0, decimals - (d.length-1-dec));
+            else
+                d += '.';
+            
+            d = d + $.zeroPad('', num);
+        }
+        
+        return d;
     },
     
     /**

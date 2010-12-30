@@ -305,6 +305,7 @@ Q.asyncErrors = {
     },
     
     handle: function(error){
+        if(!error) return;
         if(!$.isArray(error))
             error = [error];
         for(var i = 0; i < error.length; i++)

@@ -403,9 +403,10 @@ Q.DebugBar.renderRequest = function(request, settings, sync){
     }
         
     if(has_more){
-        <div class="query">
-            This list has been truncated. 
-        </div>
+        var tq = $('<div class="query">\
+            This list has been truncated. \
+        </div>');
+        queries.append(tq);
     }
     
     return r;
@@ -415,6 +416,11 @@ Q.DebugBar.renderRequest = function(request, settings, sync){
 Q.handleServerError = function(data, xhr, status, errorThrown){
     if(data && data.debug && data.debug.exception_type && window.DEBUG)
         DEBUG.addRequest(data.debug);
+    else if(data.errors && window.DEBUG && Q.error){
+        for(var i = 0; i < data.errors.length; i++)
+            Q.error(data.errors[i].message);
+        Q.asyncErrors.handle(data.errors);
+    }
     else{
         if(Q.error)
             Q.error('Oops. An error occurred. Our team has been notified!');
@@ -425,7 +431,7 @@ Q.handleServerError = function(data, xhr, status, errorThrown){
 
 Q.handleSuccess = function(data, options){
     // dump the data into the query analyzer.
-    if(data.debug && DEBUG){
+    if(data.debug && window.DEBUG){
         DEBUG.addRequest(data.debug);
     }
 };
@@ -433,10 +439,11 @@ Q.handleSuccess = function(data, options){
 //global js error catching
 Q.WindowErrorUrl = null; //'/api/v1/error/jserror'
 var oldwinerr = window.onerror;
+Q.JS_ERRORS = {};
 window.onerror = function(err, file, line){
-    if($.isFunction(window.onerror)) window.onerror.apply(this, arguments);
+    if($.isFunction(oldwinerr)) oldwinerr.apply(this, arguments);
     
-    if(Q.WindowErrorUrl){
+    if(Q.WindowErrorUrl && !(err in Q.JS_ERRORS)){
         var flash = 'None';
         if($.flash.available)
             flash = $.replace('{0}.{1}.r{2}', [$.flash.version.major, $.flash.version.minor, $.flash.version.release])
@@ -449,6 +456,8 @@ window.onerror = function(err, file, line){
             url: document.location.href,
             flash: flash
         };
+        
+        Q.JS_ERRORS[err] = errorJson;
         
         setTimeout(function(){
             $.postJSON(Q.WindowErrorUrl, {error: $.toJSON(errorJson)});
