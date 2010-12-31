@@ -348,6 +348,21 @@ Q.Form = Q.Module.extend('Form', /** @lends Q.Form */{
      * @returns undefined if val specified, the value of the HTML element if not.
      */
     val: function(name, val){
+        
+        if(arguments.length == 0){
+            //if nothing specified return an object with all values.
+            var ret = {};
+            var elems = this.form.find('input[type="hidden"], input:visible, textarea:visible, select:visible');
+            
+            for(var i = 0; i < elems.length; i++){
+                var elem = elems.eq(i);
+                var n = elem.attr('name');
+                if(elem.attr('type') != 'submit' && n)
+                    ret[n] = this.val(n);
+            }
+            return ret;
+        }
+        
         var elem = this.getElement(name);
         
         //set data?
@@ -494,7 +509,9 @@ Q.AsyncForm = Q.Form.extend('AsyncForm', /** @lends Q.AsyncForm */{
                     self.loader.stopLoading();
                 }
             });
-            self.form.ajaxSubmit(opts);
+            
+            //actually submit the form
+            self._validSubmit(opts);
         };
         
         self._super(container, settings);
@@ -503,6 +520,13 @@ Q.AsyncForm = Q.Form.extend('AsyncForm', /** @lends Q.AsyncForm */{
         self.loader.bind('loading', function(){
             self.trigger.apply(self, ['loading'].concat(Array.prototype.slice.call(arguments)));
         });
+    },
+    
+    /**
+     * This should submit the form with the given ajax options. Override as necessary
+     */
+    _validSubmit: function(ajaxOptions){
+        this.form.ajaxSubmit(ajaxOptions);
     },
     
     _onSuccess: function(){
