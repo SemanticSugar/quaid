@@ -96,6 +96,16 @@ $.log.LEVEL_FUNCTIONS[$.log.ERROR] = 'error';
 
 $.log.LEVEL_FUNCTIONS[$.log.LOG] = 'log';
 
+function indexOf(self, obj){ //effin IE. 
+    for(var i=0; i<self.length; i++){
+        if(self[i]==obj){
+            return i;
+        }
+    }
+    return -1;
+}
+
+
 $.log.logFn = function(){
     if( window.console && window.console.log && $.isFunction(window.console.log)){
         
@@ -107,7 +117,7 @@ $.log.logFn = function(){
         for(var i = 0; i < arguments.length; i++) args.push(arguments[i]);
         
         //figure out if we need to call a different log fn on the console.
-        if(arguments.length > 0 && (ind = $.log.LEVEL_ORDER.indexOf(arguments[0])) > -1){
+        if(arguments.length > 0 && (ind = indexOf($.log.LEVEL_ORDER, arguments[0])) > -1){
             var fn2 = window.console[$.log.LEVEL_FUNCTIONS[$.log.LEVEL_ORDER[ind]]];
             if($.isFunction(fn2)){
                 fn = fn2;
@@ -151,7 +161,7 @@ $.log.failoverFn = function(args){
         }, 100);
     }
         
-    if($.log.failoverToFirebugLite){
+    if($.log.failoverToFirebugLite && $.log.enabled){
         
         //dynamically load firebug lite. It is HEAVY in IE on the VM.
         if(!$.log.loading){
@@ -178,7 +188,7 @@ $.log.failoverFn = function(args){
         else
             pollLogFn();
     }
-    else if($.SimpleConsole){
+    else if($.SimpleConsole && $.log.enabled){
         window.console = $('body').SimpleConsole();
         $.log.logFn.apply(null, args);
     }

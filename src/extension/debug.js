@@ -377,7 +377,7 @@ Q.DebugBar.renderRequest = function(request, settings, sync){
         var query = request.query_data[i].query;
         var query_time = request.query_data[i].time;
         var meta = qcount[query];
-        query = query.replace('\n', ' ').replace('\r', ' ');
+        query = query.replace(/[\n\r\t]/g, ' ');
         
         if(!meta.rendered){
             var qdict = {
