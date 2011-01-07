@@ -373,6 +373,10 @@ Q.DebugBar.renderRequest = function(request, settings, sync){
     var r = $($.replace(requestTemplate, d));
     var queries = r.find('.queries');
     
+    request.query_data.sort(function(a, b){
+        return b.time - a.time;
+    });
+    
     for( var i = 0; i < request.query_data.length; i++ ){
         var query = request.query_data[i].query;
         var query_time = request.query_data[i].time;

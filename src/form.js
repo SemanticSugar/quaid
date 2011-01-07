@@ -189,7 +189,7 @@ Q.Form = Q.Module.extend('Form', /** @lends Q.Form */{
             disabledClass: 'disabled',
             
             onLoad: function(data){},
-            onSubmit: function(form, formData){}
+            onSubmit: function(form, formData){return true;}
         },
         
         /**
