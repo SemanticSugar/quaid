@@ -55,5 +55,6 @@ Q.View = _View.extend('View', {
 
 //give our module class backbone events!
 $.extend(Q.Module.prototype, Backbone.Events);
+$.extend(Q, Backbone.Events);
 
 })(jQuery);

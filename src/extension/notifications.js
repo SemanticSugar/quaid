@@ -14,6 +14,7 @@ Q.NotificationDisplay = Q.Module.extend('NotificationDisplay', {
             dismissText: '',
             containerId: '',
             messageClass: '',
+            onHide: function(){},
             decay: null //in milliseconds
         };
         var settings = $.extend({}, defs, options);
@@ -22,6 +23,8 @@ Q.NotificationDisplay = Q.Module.extend('NotificationDisplay', {
             container = $('<div/>', {id: settings.id});
         
         this._super(container, settings);
+        
+        $.log(settings, this.container);
         
         this._setup();
     },
@@ -52,10 +55,10 @@ Q.NotificationDisplay = Q.Module.extend('NotificationDisplay', {
         this.hide();
     },
     
-    _buildMessage: function(message, id){
+    _buildMessage: function(message, id, messageClass){
         var node = $('<div/>', {
-            'class': this.settings.messageClass + ' message-'+id,
-            text: message
+            'class': this.settings.messageClass + ' message-'+id + (messageClass ? ' '+messageClass : ''),
+            html: message
         });
         
         return node;
@@ -82,12 +85,15 @@ Q.NotificationDisplay = Q.Module.extend('NotificationDisplay', {
         return true;
     },
     
-    add: function(message){
+    add: function(message, decay, messageClass){
         if(message && message.length)
             this.show();
-        this.messages.append(this._buildMessage(message, this.count));
+        var m = this._buildMessage(message, this.count, messageClass);
+        this.messages.append(m);
         this.messageModel.push({message: message, id: this.count++});
-        this._startDecay(this.settings.decay);
+        if(decay != false)
+            this._startDecay(this.settings.decay);
+        return m;
     },
     
     show: function(){
@@ -95,6 +101,8 @@ Q.NotificationDisplay = Q.Module.extend('NotificationDisplay', {
         this.container.parent().addClass(this.settings.messageClass);
     },
     hide: function(){
+        if($.isFunction(this.settings.onHide))
+            this.settings.onHide.call(this);
         this.container.hide();
         this.container.parent().removeClass(this.settings.messageClass);
     },
@@ -167,9 +175,8 @@ $(document).ready(function(){
         displays.append(o.container);
         
         (function(obj){
-            Q[k] = function(){
-                var message = Array.prototype.join.apply(arguments, [' ']);
-                obj.add(message);
+            Q[k] = function(message, decay, clazz){
+                obj.add(message, decay, clazz);
             };
         })(o);
     }

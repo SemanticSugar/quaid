@@ -230,7 +230,7 @@ $.extend($, /** @lends $ */{
         if (!$.isString(date) || !format) return null;
         
         var parts = date.split(/\W+/);
-        var against = format.split(/\W+/), d, m, y, h, min, now = new Date();
+        var against = format.split(/\W+/), d, m, y, h, min, sec, now = new Date();
         for (var i = 0; i < parts.length; i++) {
             switch (against[i]) {
                 case 'd':
@@ -262,6 +262,9 @@ $.extend($, /** @lends $ */{
                 case 'M':
                     min = parseInt(parts[i], 10);
                     break;
+                case 'S':
+                    sec = parseInt(parts[i], 10);
+                    break;
             }
         }
         return new Date(
@@ -270,7 +273,7 @@ $.extend($, /** @lends $ */{
             d === undefined ? now.getDate() : d,
             h === undefined ? 0 : h,
             min === undefined ? 0 : min,
-            0
+            sec === undefined ? 0 : sec
         );
     },
     
@@ -435,14 +438,15 @@ $.extend($, /** @lends $ */{
     /**
      * <p>Redirect to some other url. Nothing fancy.</p>
      **/
-    redirect: function(url, history){
+    redirect: function(url, history, method){
         if(history == false)
             window.location.replace(url);
         else{
+            method = method || 'get';
             //a form adds the current page to the history
             var form = $('<form/>', {
                 action: url,
-                method: 'get',
+                method: method,
                 html: '&nbsp;'
             });
             $('body').append(form);

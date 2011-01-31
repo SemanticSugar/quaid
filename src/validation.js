@@ -29,6 +29,11 @@ THE SOFTWARE.
 var Q = $[$.QUAID];
 $.ajaxOriginal = $.ajax;
 
+function trigger(){
+    if(Q.trigger)
+        Q.trigger.apply(Q, arguments);
+}
+
 /**
  * <p>Monkey patch for the jquery ajax function. It handles our json
  * conventions. It handles 500 errors. It makes you coffee. It entertains your
@@ -104,8 +109,10 @@ $.ajax = function( options ) {
             options.applicationError.call(this, 'applicationerror', errors);
             
             var uh = Q.asyncErrors.getUnhandledErrors();
-            if(uh && $.isFunction(Q.handleApplicationErrors))
+            if(uh && $.isFunction(Q.handleApplicationErrors)){
                 Q.handleApplicationErrors.call(this, uh);
+                trigger('request:applicationerror', uh);
+            }
         }
         
         //So success gets anything that is a 200. However, we may have application
@@ -126,8 +133,12 @@ $.ajax = function( options ) {
             if( data && (data.status == 'fail' || (data.errors && data.errors.length)))
                 _handleAppErrors(data);
             // just pass through for success....
-            else
+            else{
                 originalSuccess.call(this, data, status);
+                trigger('request:success', arguments);
+            }
+            
+            trigger('request:end', arguments);
             
         }//end success handler
         options.success = successHandler;
@@ -146,6 +157,7 @@ $.ajax = function( options ) {
                 
                 options.applicationError.call(this, 'servererror', xhr.status);
                 Q.handleServerError.call(this, data, xhr, status, errorThrown);
+                trigger('request:servererror', data, xhr, status, errorThrown);
             }
             else if(xhr.status >= 400){
                 try {
@@ -165,13 +177,17 @@ $.ajax = function( options ) {
                     error = errorThrown.number + ': ' + errorThrown.description;
                 
                 $.log('$.ajax Error ', error, ', http status: ', xhr.status, ':', status, '; original', original);
+                
+                trigger('request:unknownerror', error, xhr, status, original);
             }
             
             originalError.call(this, xhr, status, errorThrown);
             
+            trigger('request:end', arguments);
         }//end error handler
         options.error = errorHandler;
         
+        trigger('request:start', options);
     }//end json monkey patchage
     
     return $.ajaxOriginal(options);

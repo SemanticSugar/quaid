@@ -83,6 +83,8 @@ Q.DebugBar = Q.Module.extend('DebugBar', {
             }
         });
         
+        this._setupLoader();
+        
         this.FULL_COOKIE_KEY = 'full_debugbar';
         this.SIZE_COOKIE_KEY = 'debugbar_height';
         
@@ -132,6 +134,21 @@ Q.DebugBar = Q.Module.extend('DebugBar', {
         if($.cookie)
             return $.cookie(key);
         return this.settings.isOpen ? 'show' : 'hide';
+    },
+    
+    _setupLoader: function(){
+        requestLoader = this.requests.Loader({
+            location: {position: 'absolute', left: '10px', bottom: '10px'},
+            opacity: 1
+        });
+        if(Q.bind){
+            Q.bind('request:start', function(){
+                requestLoader.startLoading();
+            });
+            Q.bind('request:end', function(){
+                requestLoader.stopLoading();
+            });
+        }
     },
     
     _updateRequestContainerSize: function(containerHeight){
