@@ -437,17 +437,23 @@ Q.DebugBar.renderRequest = function(request, settings, sync){
 Q.handleServerError = function(data, xhr, status, errorThrown){
     if(data && data.debug && data.debug.exception_type && window.DEBUG)
         DEBUG.addRequest(data.debug);
-    else if(data.errors && window.DEBUG && Q.error){
+    else if(data && data.errors && window.DEBUG && Q.error){
         for(var i = 0; i < data.errors.length; i++)
             Q.error(data.errors[i].message);
         Q.asyncErrors.handle(data.errors);
     }
-    else{
+    else if(xhr && xhr.status == 500){
         if(Q.error)
             Q.error('Oops. An error occurred. Our team has been notified!');
         else
             alert('Oops. An error occurred. Our team has been notified!');
     }
+    else if(xhr && xhr.status == 503 || xhr.status == 504)
+        if(Q.error) Q.error('Your request timed out :(');
+    else if(xhr && xhr.status == 501)
+        if(Q.error) Q.error('Not implemented');
+    else
+        if(Q.error) Q.error('Unknown error');
 };
 
 Q.handleSuccess = function(data, options){

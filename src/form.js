@@ -189,7 +189,8 @@ Q.Form = Q.Module.extend('Form', /** @lends Q.Form */{
             disabledClass: 'disabled',
             
             onLoad: function(data){},
-            onSubmit: function(form, formData){return true;}
+            onSubmit: function(form, formData){return true;},
+            onInvalid: function(form, validator){return true;}
         },
         
         /**
@@ -235,7 +236,7 @@ Q.Form = Q.Module.extend('Form', /** @lends Q.Form */{
         });
         
         settings.validationOptions.invalidHandler = function(){
-            self._submittersEnable(true);
+            self._onInvalid.apply(self, arguments);
         };
         
         self.form.validate(settings.validationOptions);
@@ -287,6 +288,7 @@ Q.Form = Q.Module.extend('Form', /** @lends Q.Form */{
         if(elem.attr('type') == 'radio'){
             elem.each(function(){
                 if($(this).val() == data) $(this).attr('checked', 'checked');
+                $(this).change();
             });
         }
         else if(elem.attr('type') == 'checkbox'){
@@ -295,6 +297,12 @@ Q.Form = Q.Module.extend('Form', /** @lends Q.Form */{
         }
         else
             elem.val(data);
+    },
+    
+    _onInvalid: function(){
+        self._submittersEnable(true);
+        if($.isFunction(this.settings.onInvalid))
+            return this.settings.onInvalid.call(this, arguments);
     },
     
     /**
@@ -405,6 +413,7 @@ Q.Form = Q.Module.extend('Form', /** @lends Q.Form */{
                 this._setData(elem, data);
             }
         }
+        this._submittersEnable(true);
     },
     
     /**

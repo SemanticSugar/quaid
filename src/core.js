@@ -302,7 +302,10 @@ Q.Module = Class.extend('Module', {
         
         for(var key in this.n)
             this.n[key] = this.$(this.n[key]);
-    }
+    },
+    
+    hide: function(){this.container.hide.apply(this.container, arguments)},
+    show: function(){this.container.show.apply(this.container, arguments)}
 })
 
 })(jQuery);
