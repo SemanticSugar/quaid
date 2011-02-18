@@ -300,7 +300,7 @@ Q.Form = Q.Module.extend('Form', /** @lends Q.Form */{
     },
     
     _onInvalid: function(){
-        self._submittersEnable(true);
+        this._submittersEnable(true);
         if($.isFunction(this.settings.onInvalid))
             return this.settings.onInvalid.call(this, arguments);
     },
