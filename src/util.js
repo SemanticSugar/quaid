@@ -224,6 +224,8 @@ $.extend($, /** @lends $ */{
      * @returns a Date object
      **/
     parseDate: function(date, format){
+        format = format || 'y-m-d H:M:S';
+        
         if (!date) return null;
         if (date.constructor == Date || $.isNumber(date))
             return new Date(date);
@@ -267,7 +269,7 @@ $.extend($, /** @lends $ */{
                     break;
             }
         }
-        return new Date(
+        var dateObj = new Date(
             y === undefined ? now.getFullYear() : y,
             m === undefined ? now.getMonth() : m,
             d === undefined ? now.getDate() : d,
@@ -275,6 +277,12 @@ $.extend($, /** @lends $ */{
             min === undefined ? 0 : min,
             sec === undefined ? 0 : sec
         );
+        
+        if(dateObj && $.isString(date) && (date.indexOf('Z') > -1 || date.indexOf('UTC') > -1)){
+            dateObj = new Date(dateObj.getTime() - (dateObj.getTimezoneOffset() * 60 * 1000));
+        }
+        
+        return dateObj;
     },
     
     /**
