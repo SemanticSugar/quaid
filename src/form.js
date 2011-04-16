@@ -239,7 +239,7 @@ Q.Form = Q.Module.extend('Form', /** @lends Q.Form */{
             self._onInvalid.apply(self, arguments);
         };
         
-        self.form.validate(settings.validationOptions);
+        this.validator = self.form.validate(settings.validationOptions);
         
         settings.submitters = $.getjQueryObject(settings.submitters);
         if(!settings.submitters)
@@ -395,6 +395,16 @@ Q.Form = Q.Module.extend('Form', /** @lends Q.Form */{
         this.form.find('input[type="text"]:first, textarea:first').focus();
     },
     
+    clearErrors: function(){
+        var v = this.validator;
+        if(v){
+            v.submitted = {};
+            v.prepareForm();
+            v.hideErrors();
+            v.elements().removeClass( v.settings.errorClass );
+        }
+    },
+    
     /**
      * <p>Will reset the form based on the settings.defaultData dict. If an element's name
      * is not in the dict, the value will be cleared/unchecked</p>
@@ -503,8 +513,13 @@ Q.AsyncForm = Q.Form.extend('AsyncForm', /** @lends Q.AsyncForm */{
             settings.validationOptions.rules = rules;
         }
         
+        this._baseOnSubmit = this._onSubmit;
+        this._onSubmit = function(){return true;}
+        
         //hook the async form submission to the validation plugin
         settings.validationOptions.submitHandler = function(validForm){
+            if(self._baseOnSubmit() == false) return false;
+            
             self.loader.startLoading();
             
             settings.ajaxOptions.form = self.form;
